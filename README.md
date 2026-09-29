@@ -13,18 +13,20 @@ The **Library Management API** provides core backend functionalities to support 
 ---
 ## Project Structure
 
+```text
 .
 ├── docs/
 │   └── development-roadmap.md   # Architectural decisions & sprint plans
 ├── src/
-│   ├── controllers/            # Route handlers
-│   ├── models/                 # Database schema definitions
-│   ├── routes/                 # API endpoints definition
-│   ├── services/               # Core business logic
-│   └── seeders/                # Seed script for the 2,109 Open Library records
+│   ├── controllers/              # Route handlers
+│   ├── models/                   # Database schema definitions
+│   ├── routes/                   # API endpoint definitions
+│   ├── services/                 # Core business logic
+│   └── seeders/                  # Seed script for the 2,109 Open Library records
 ├── .env.example
 ├── README.md
 └── package.json
+```
 
 ---
 
