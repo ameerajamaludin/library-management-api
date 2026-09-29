@@ -77,7 +77,7 @@ The API is structured around the main library domain:
 
 The Entity Relationship Diagram (ERD) illustrates the main entities in the library management system and the relationships between them.
 
-![ERD](docs/ERD.png)
+![ERD](docs/erd.png)
 
 These relationships follow the project's development roadmap.
 
