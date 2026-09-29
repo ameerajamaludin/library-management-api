@@ -3,30 +3,24 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { ApiProperty } from '@nestjs/swagger';
-
 import { Book } from '../../books/entities/book.entity';
+import { Borrow } from '../../borrows/entities/borrow.entity';
 
 @Entity('copies')
 export class Copy {
-  @ApiProperty({
-    example: 1,
-  })
   @PrimaryGeneratedColumn()
   copy_id: number;
 
-  @ApiProperty({
-    example: 'OL514625W',
+  @Column({
+    type: 'varchar',
+    length: 255,
   })
-  @Column({ type: 'varchar', length: 255 })
   openlibrary_work_id: string;
 
-  @ApiProperty({
-    example: 'BC000001',
-  })
   @Column({
     type: 'varchar',
     length: 100,
@@ -34,10 +28,6 @@ export class Copy {
   })
   barcode: string;
 
-  @ApiProperty({
-    example: 'AVAILABLE',
-    description: 'Current status of the physical copy',
-  })
   @Column({
     type: 'varchar',
     length: 50,
@@ -49,4 +39,7 @@ export class Copy {
     name: 'openlibrary_work_id',
   })
   book: Book;
+
+  @OneToMany(() => Borrow, (borrow) => borrow.copy)
+  borrows: Borrow[];
 }

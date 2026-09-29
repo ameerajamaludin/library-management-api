@@ -8,6 +8,10 @@ import { AuthorsModule } from './authors/authors.module';
 import { RolesModule } from './roles/roles.module';
 import { UsersModule } from './users/users.module';
 import { CopiesModule } from './copies/copies.module';
+import { BorrowsModule } from './borrows/borrows.module';
+import { ReturnsModule } from './returns/returns.module';
+import { FinesModule } from './fines/fines.module';
+
 
 @Module({
   imports: [
@@ -38,6 +42,9 @@ import { CopiesModule } from './copies/copies.module';
     RolesModule,
     UsersModule,
     CopiesModule,
+    BorrowsModule,
+    ReturnsModule,
+    FinesModule,
   ],
 })
 export class AppModule {}

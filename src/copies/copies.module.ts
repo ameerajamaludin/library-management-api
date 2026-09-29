@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Copy } from './entities/copy.entity';
 import { Book } from '../books/entities/book.entity';
+import { Borrow } from '../borrows/entities/borrow.entity';
+
 import { CopiesController } from './copies.controller';
 import { CopiesService } from './copies.service';
 
@@ -11,6 +13,7 @@ import { CopiesService } from './copies.service';
     TypeOrmModule.forFeature([
       Copy,
       Book,
+      Borrow,
     ]),
   ],
   controllers: [

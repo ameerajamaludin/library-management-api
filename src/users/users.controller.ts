@@ -21,6 +21,10 @@ export class UsersController {
     private readonly usersService: UsersService,
   ) {}
 
+  // ==========================================
+  // GET /users
+  // ==========================================
+
   @Get()
   @ApiOperation({
     summary: 'List users',
@@ -35,11 +39,15 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  // ==========================================
+  // GET /users/:id
+  // ==========================================
+
   @Get(':id')
   @ApiOperation({
     summary: 'Get user by ID',
     description:
-      'Returns a single library user with their role.',
+      'Returns a single library user with their role and complete borrowing history, including copy and book details.',
   })
   @ApiParam({
     name: 'id',
@@ -48,7 +56,8 @@ export class UsersController {
   })
   @ApiResponse({
     status: 200,
-    description: 'User found',
+    description:
+      'User details with borrowing history, copy information, and book information.',
   })
   @ApiResponse({
     status: 404,
@@ -56,7 +65,7 @@ export class UsersController {
   })
   async findOne(
     @Param('id') id: string,
-  ): Promise<User> {
+  ) {
     return this.usersService.findOne(id);
   }
 }

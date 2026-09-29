@@ -1,11 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { BooksQueryDto } from './dto/books-query.dto';
+import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 
 import { Book } from './entities/book.entity';
 import { Author } from '../authors/entities/author.entity';
 import { BookAuthor } from './entities/book-author.entity';
+import { Copy } from '../copies/entities/copy.entity';
+
+
 
 @Injectable()
 export class BooksService {
@@ -18,6 +24,9 @@ constructor(
 
   @InjectRepository(Author)
   private readonly authorsRepository: Repository<Author>,
+
+  @InjectRepository(Copy)
+  private readonly copiesRepository: Repository<Copy>,
 ) {}
 
 async findAll(query: BooksQueryDto) {
@@ -26,6 +35,7 @@ async findAll(query: BooksQueryDto) {
     isbn,
     categoryId,
     fictionNonfiction,
+    status,
     page,
     limit,
   } = query;
@@ -40,14 +50,30 @@ async findAll(query: BooksQueryDto) {
     .skip(skip)
     .take(limit);
 
-  if (search) {
-    queryBuilder.andWhere(
-      '(LOWER(book.title) LIKE LOWER(:search) OR LOWER(book.description) LIKE LOWER(:search))',
-      {
-        search: `%${search}%`,
-      },
-    );
-  }
+if (search) {
+  queryBuilder.andWhere(
+    '(LOWER(book.title) LIKE LOWER(:search) OR LOWER(book.description) LIKE LOWER(:search))',
+    {
+      search: `%${search}%`,
+    },
+  );
+}
+
+if (status) {
+  queryBuilder.andWhere(
+    'book.status = :status',
+    {
+      status,
+    },
+  );
+} else {
+  queryBuilder.andWhere(
+    'book.status = :defaultStatus',
+    {
+      defaultStatus: 'ACTIVE',
+    },
+  );
+}
 
   if (isbn) {
   queryBuilder.andWhere(
@@ -84,6 +110,91 @@ async findAll(query: BooksQueryDto) {
     limit,
     total,
     totalPages: Math.ceil(total / limit),
+  };
+}
+
+async createBook(createBookDto: CreateBookDto) {
+  const existingBook = await this.booksRepository.findOne({
+    where: {
+      openlibrary_work_id:
+        createBookDto.openlibrary_work_id,
+    },
+  });
+
+  if (existingBook) {
+    throw new ConflictException(
+      `Book ${createBookDto.openlibrary_work_id} already exists`,
+    );
+  }
+
+  const book = this.booksRepository.create(createBookDto);
+
+  return this.booksRepository.save(book);
+}
+
+async updateBook(
+  id: string,
+  updateBookDto: UpdateBookDto,
+) {
+  const book = await this.booksRepository.findOne({
+    where: {
+      openlibrary_work_id: id,
+    },
+  });
+
+  if (!book) {
+    throw new NotFoundException(
+      `Book ${id} not found`,
+    );
+  }
+
+  Object.assign(book, updateBookDto);
+
+  return this.booksRepository.save(book);
+}
+
+async deleteBook(id: string) {
+  const book = await this.booksRepository.findOne({
+    where: {
+      openlibrary_work_id: id,
+    },
+  });
+
+  if (!book) {
+    throw new NotFoundException(
+      `Book ${id} not found`,
+    );
+  }
+
+  const copyCount = await this.copiesRepository.count({
+    where: {
+      openlibrary_work_id: id,
+    },
+  });
+
+  const authorRelationshipCount =
+    await this.bookAuthorsRepository.count({
+      where: {
+        openlibrary_work_id: id,
+      },
+    });
+
+  if (copyCount > 0) {
+    throw new ConflictException(
+      `Book ${id} cannot be deleted because it has ${copyCount} physical copies.`,
+    );
+  }
+
+  if (authorRelationshipCount > 0) {
+    throw new ConflictException(
+      `Book ${id} cannot be deleted because it has author relationships.`,
+    );
+  }
+
+  await this.booksRepository.remove(book);
+
+  return {
+    message: `Book ${id} deleted successfully`,
   };
 }
 
@@ -151,6 +262,21 @@ async findAuthorsByBook(
     })),
     order: {
       author_name: 'ASC',
+    },
+  });
+}
+
+async findByStatus(status: string) {
+  return this.booksRepository.find({
+    where: {
+      status,
+    },
+    relations: {
+      category: true,
+      copies: true,
+    },
+    order: {
+      title: 'ASC',
     },
   });
 }

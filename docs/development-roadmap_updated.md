@@ -154,9 +154,9 @@ Administrative and librarian operations must be protected by role-based authoriz
 - [x] Create `Role` entity
 - [x] Create `User` entity
 - [x] Create `Copy` entity
-- [ ] Create `Borrow` entity
-- [ ] Create `Return` entity
-- [ ] Create `Fine` entity
+- [x] Create `Borrow` entity
+- [x] Create `Return` entity
+- [x] Create `Fine` entity
 
 ### 1.3 Entity relationships
 
@@ -165,10 +165,10 @@ Administrative and librarian operations must be protected by role-based authoriz
 - [x] Book → Authors
 - [x] Author → Books
 - [x] Role → Users
-- [ ] User → Borrows
-- [ ] Copy → Borrows
-- [ ] Borrow → Return
-- [ ] Borrow → Fines
+- [x] User → Borrows
+- [x] Copy → Borrows
+- [x] Borrow → Return
+- [x] Borrow → Fines
 
 ### 1.4 Modules
 
@@ -178,9 +178,9 @@ Administrative and librarian operations must be protected by role-based authoriz
 - [x] Roles module
 - [x] Users module
 - [x] Copies module
-- [ ] Borrows module
-- [ ] Returns module
-- [ ] Fines module
+- [x] Borrows module
+- [x] Returns module
+- [x] Fines module
 - [ ] Auth module
 
 ### 1.5 Database migrations
@@ -253,9 +253,20 @@ Build the public/library catalog functionality.
 
 - [x] `GET /books`
 - [x] `GET /books/:id`
-- [ ] `POST /books`
-- [ ] `PATCH /books/:id`
-- [ ] `DELETE /books/:id`
+- [x] `POST /books`
+- [x] `PATCH /books/:id`
+- [x] `DELETE /books/:id`
+- [x] Delete protected by existing copies
+- [x] Delete protected by author relationships
+- [x] Non-ACTIVE books cannot be deleted
+
+#### Book status endpoints
+
+- [x] `GET /books/status/:status`
+- [x] Filter by `ACTIVE`
+- [x] Filter by `INACTIVE`
+- [x] Filter by `ARCHIVED`
+- [x] Swagger documentation
 
 ### Categories
 
@@ -297,6 +308,7 @@ Build the public/library catalog functionality.
 - [x] Availability information
 - [x] Total copy count
 - [x] Available copy count
+- [x] Book lifecycle status
 
 ### Phase 2 exit criteria
 
@@ -357,7 +369,7 @@ Authentication and role-based authorization are enforced consistently across pro
 
 # Phase 4 — Borrowing
 
-### Status: ⬜ Not Started
+### Status: 🟢 In Progress
 
 Implement the core library transaction.
 
@@ -397,20 +409,20 @@ Check available copy
 
 ### Endpoints
 
-- [ ] Issue/borrow book
-- [ ] View borrow
-- [ ] View member borrows
-- [ ] View active borrows
-- [ ] View borrowing history
+- [x] Issue/borrow book
+- [x] View borrow
+- [x] View member borrows
+- [x] View active borrows
+- [x] View borrowing history
 
 ### Business rules
 
-- [ ] Cannot borrow when no copy is available
-- [ ] Select an available copy
-- [ ] Create borrow transaction
-- [ ] Change copy status
-- [ ] Maintain due date
-- [ ] Prevent invalid duplicate operations
+- [x] Cannot borrow when no copy is available
+- [x] Select an available copy
+- [x] Create borrow transaction
+- [x] Change copy status
+- [x] Maintain due date
+- [x] Prevent invalid duplicate operations
 
 ### Transaction integrity
 
@@ -424,7 +436,7 @@ A valid member can borrow an available copy and the database remains consistent.
 
 # Phase 5 — Returns
 
-### Status: ⬜ Not Started
+### Status: 🟢 In Progress
 
 Implement the return workflow.
 
@@ -445,17 +457,17 @@ Process return
 
 ### Endpoints
 
-- [ ] Process return
-- [ ] View return record
-- [ ] View returned borrow history
+- [x] Process return
+- [x] View return record
+- [x] View returned borrow history
 
 ### Business rules
 
-- [ ] Cannot return an already-returned borrow
-- [ ] Return must reference the correct borrow
-- [ ] Copy becomes available
-- [ ] Borrow becomes completed
-- [ ] Return date recorded
+- [x] Cannot return an already-returned borrow
+- [x] Return must reference the correct borrow
+- [x] Copy becomes available
+- [x] Borrow becomes completed
+- [x] Return date recorded
 
 ### Phase 5 exit criteria
 
@@ -634,16 +646,16 @@ copy available
 
 # Phase 11 — API Documentation
 
-### Status: ⬜ Not Started
+### Status: 🟢 In Progress
 
-- [ ] Configure Swagger
+- [x] Configure Swagger
 - [ ] Document authentication
-- [ ] Document DTOs
-- [ ] Document response schemas
+- [x] Document DTOs
+- [x] Document response schemas
 - [ ] Document error responses
 - [ ] Document role requirements
-- [ ] Add examples
-- [ ] Verify all endpoints appear correctly
+- [x] Add examples
+- [x] Verify all endpoints appear correctly
 
 ---
 

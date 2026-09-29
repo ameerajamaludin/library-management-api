@@ -36,6 +36,9 @@ export class Book {
   @Column({ type: 'varchar', length: 50, nullable: true })
   isbn: string | null;
 
+  @Column({ type: 'varchar', length: 20, default: 'ACTIVE', })
+  status: string;
+
   @Column({ type: 'varchar', nullable: true })
   cover_image_small: string | null;
 

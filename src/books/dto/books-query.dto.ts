@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsIn,
   IsInt,
   IsOptional,
   IsString,
@@ -24,6 +25,10 @@ export class BooksQueryDto {
   @IsOptional()
   @IsString()
   isbn?: string;
+
+  @IsOptional()
+@IsIn(['ACTIVE', 'INACTIVE', 'ARCHIVED'])
+status?: string;
 
   @ApiPropertyOptional({
     example: 142,

@@ -8,11 +8,12 @@ import {
 } from 'typeorm';
 
 import { Role } from '../../roles/entities/role.entity';
+import { Borrow } from '../../borrows/entities/borrow.entity';
 
 @Entity('users')
 export class User {
   @PrimaryColumn({ type: 'varchar', length: 50 })
-user_id: string;
+  user_id: string;
 
   @Column({ type: 'varchar', length: 255 })
   name: string;
@@ -30,4 +31,7 @@ user_id: string;
   @ManyToOne(() => Role, (role) => role.users)
   @JoinColumn({ name: 'role_id' })
   role: Role;
+
+  @OneToMany(() => Borrow, (borrow) => borrow.user)
+  borrows: Borrow[];
 }
