@@ -38,7 +38,7 @@ The project is being developed incrementally.
 |---|---|---|
 | 1 | Project & database foundation | ✅ Completed  |
 | 2 | Books & catalog API | ✅ Completed  |
-| 3 | Authentication & authorization | ⬜ Planned |
+| 3 | Authorization & Role-Based Access Control | ⬜ Planned |
 | 4 | Borrowing | ⏳ In Progress |
 | 5 | Returns | ⏳ In Progress |
 | 6 | Overdue tracking | ⬜ Planned |
@@ -47,7 +47,6 @@ The project is being developed incrementally.
 | 9 | Validation & error handling | ⬜ Planned |
 | 10 | Testing | ⬜ Planned |
 | 11 | API documentation | ⬜ Planned |
-| 12 | Production readiness | ⬜ Planned |
 
 For the complete roadmap and exit criteria, see [`docs/development-roadmap.md`](docs/development-roadmap.md).
 
