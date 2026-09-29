@@ -39,10 +39,10 @@ The project is being developed incrementally.
 | 1 | Project & database foundation | ✅ Completed  |
 | 2 | Books & catalog API | ✅ Completed  |
 | 3 | Authentication & authorization | ⬜ Planned |
-| 4 | Borrowing | ⬜ Planned |
-| 5 | Returns | ⬜ Planned |
+| 4 | Borrowing | ⏳ In Progress |
+| 5 | Returns | ⏳ In Progress |
 | 6 | Overdue tracking | ⬜ Planned |
-| 7 | Fines | ⬜ Planned |
+| 7 | Fines | ⏳ In Progress |
 | 8 | Reports | ⬜ Planned |
 | 9 | Validation & error handling | ⬜ Planned |
 | 10 | Testing | ⬜ Planned |
