@@ -4,10 +4,9 @@
 
 ## Project Overview
 
-The **Library Management API** provides core backend functionalities to support library cataloging, search, member records, and book issuing systems. 
+A modern REST API for managing a library's books, physical copies, members, borrowing, returns, overdue tracking, and fines. The **Library Management API** provides core backend functionalities to support library cataloging, search, member records, and book issuing systems. 
 
 - **Data Source:** Seeded using data harvested from the [Open Library Data Retrieval and Normalization](https://github.com/ameerajamaludin/openlibrary-data-retrieval-and-normalization) pipeline, curated and optimized down to a representative subset of **2,109 book records** for local development and testing.
-- A modern REST API for managing a library's books, physical copies, members, borrowing, returns, overdue tracking, and fines.
 > Project Goals: mainly to understand RDBMS and REST API
 
 ---
