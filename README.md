@@ -1,7 +1,5 @@
 # Library Management API
 
-A modern RESTful API for managing library books, authors, categories, and borrowings. Built with performance, scalability, and clean architecture in mind.
-
 ---
 
 ## Project Overview
@@ -9,6 +7,8 @@ A modern RESTful API for managing library books, authors, categories, and borrow
 The **Library Management API** provides core backend functionalities to support library cataloging, search, member records, and book issuing systems. 
 
 - **Data Source:** Seeded using data harvested from the [Open Library Data Retrieval and Normalization](https://github.com/ameerajamaludin/openlibrary-data-retrieval-and-normalization) pipeline, curated and optimized down to a representative subset of **2,109 book records** for local development and testing.
+- A modern REST API for managing a library's books, physical copies, members, borrowing, returns, overdue tracking, and fines.
+> Project Goals: mainly to understand RDBMS and REST API
 
 ---
 ## Project Structure
