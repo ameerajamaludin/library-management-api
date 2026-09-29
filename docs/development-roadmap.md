@@ -255,45 +255,9 @@ book_authors   = 3,150
 > Acceptance Criteria: Phase 2 is considered completed when a user can browse the library catalog and retrieve book, author, category, and copy information through documented REST endpoints.
 
 ### Phase 3: Authorization & Role-Based Access Control
-<<<<<<< HEAD
-> STATUS: ⬜ PLANNED |  Goal: To implement role-based authorization and access control.
-
-#### Authorization
-
-- [ ] Role decorator
-- [ ] Role guard
-- [ ] ADMIN permissions
-- [ ] LIBRARIAN permissions
-- [ ] MEMBER permissions
-
-#### Role-Based Access Control (RBAC)
-
-##### ADMIN
-
-- [ ] Manage users
-- [ ] Manage books
-- [ ] View reports
-
-##### LIBRARIAN
-
-- [ ] Manage books
-- [ ] Manage members
-- [ ] Issue books
-- [ ] Process returns
-
-##### MEMBER
-
-- [ ] View books
-- [ ] View own borrows
-- [ ] View own fines
-
-> Acceptance Criteria: Phase 3 is considered completed when role-based authorization is enforced consistently across protected endpoints.
-=======
 > STATUS: ⏳ IN PROGRESS |  Goal: To implement role-based authorization and access control.
 
-Authorization is based on a `User-Id` request header.
-
-The API uses the supplied `User-Id` to find the corresponding user in the database, retrieves the user's `role_id` and `role_name`, and checks whether that role is permitted to perform the requested operation.
+Authorization is based on a `User-Id` request header. The API uses the supplied `User-Id` to find the corresponding user in the database, retrieves the user's `role_id` and `role_name`, and checks whether that role is permitted to perform the requested operation.
 
 #### Permission Matrix
 
@@ -358,7 +322,6 @@ Check endpoint permission
 - [ ] Verify `User-Id` cannot specify or override the database role
 
 > Acceptance Criteria: Phase 3 is considered completed when the API correctly identifies a user by User-Id, enforces the defined role-based permissions for ADMIN, LIBRARIAN, and MEMBER across all protected endpoints, and consistently allows or rejects requests according to the permission matrix.
->>>>>>> 5970b8b (Phase 3-7 in progress)
 
 ### Phase 4: Borrowing
 > STATUS: ⏳ IN PROGRESS | Goal: To implement the core library transaction
@@ -457,11 +420,7 @@ Process return
 
 ### Phase 6: Overdue Tracking
 
-<<<<<<< HEAD
-> Status: ⬜ PLANNED | Goal: To identify active borrows whose due date has passed
-=======
 > Status: ⏳ IN PROGRESS | Goal: To identify active borrows whose due date has passed
->>>>>>> 5970b8b (Phase 3-7 in progress)
 
 #### Requirements
 
