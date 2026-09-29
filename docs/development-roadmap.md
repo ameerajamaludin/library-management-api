@@ -2,100 +2,45 @@
 
 ## 1. Project Overview
 
-**Project:** Library Management API
+**Purpose:** A RESTful API built to manage physical library operations including books, members, borrowing workflows, overdue tracking, and fines.
 
-**Purpose:**  
-Build a REST API for managing a library's books, physical copies, members, borrowing, returns, overdue tracking, and fines.
-
-### Core technology stack
-
-- TypeScript
-- NestJS
-- PostgreSQL
-- TypeORM
-- JWT Authentication
-- Swagger / OpenAPI
+### Tech Stack
+- **Framework:** NestJS (TypeScript)
+- **Database:** PostgreSQL + TypeORM
+- **Roles & Permission:** Role-Based Access Control (RBAC)
+- **Docs:** Swagger / OpenAPI
 
 ---
 
-# 2. Architecture
+## 2. Architecture & Domain Model
 
-## High-Level Modules
+### Module Architecture
+`Auth` ➔ `Users` / `Roles` ➔ `Books` (Categories, Authors, Copies) ➔ `Borrows` (Returns, Overdue, Fines)
 
-```text
-Library Management API
-│
-├── Books
-│
-├── Users
-│
-├── Auth
-│
-└── Borrows
-    │
-    ├── Returns
-    │
-    └── Overdue
-        │
-        └── Fines
-```
-
-## Main Database Relationships
-
-```text
-categories
-    │
-    └── books
-          │
-          ├── copies
-          │
-          └── book_authors
-                 │
-                 └── authors
-
-roles
-    │
-    └── users
-          │
-          └── borrows
-                 │
-                 ├── copies
-                 │
-                 ├── returns
-                 │
-                 └── fines
-```
-
----
-
-# 3. Roles and Permissions
-
-## ADMIN
+### Key Roles & Permissions
+#### ADMIN
 
 - Manage users
 - Manage books
 - View reports
 
-## LIBRARIAN
+#### LIBRARIAN
 
 - Manage books
 - Manage members
 - Issue books
 - Process returns
 
-## MEMBER
+#### MEMBER
 
 - View books
 - View own borrows
 - View own fines
 
----
-
-# 4. Business Rules
-
+### Core Business Rules
 These rules must be enforced by the application.
 
-### Borrowing
+#### Borrowing
 
 When a member borrows a book:
 
@@ -105,7 +50,7 @@ availableCopies -= 1
 
 A member cannot borrow a book when there are no available copies.
 
-### Returning
+#### Returning
 
 When a borrowed copy is returned:
 
@@ -113,7 +58,7 @@ When a borrowed copy is returned:
 availableCopies += 1
 ```
 
-### Ownership
+#### Ownership
 
 Members can access:
 
@@ -122,21 +67,18 @@ Members can access:
 
 Members must not be able to access another member's private borrowing information.
 
-### Authorization
+#### Authorization
 
 Administrative and librarian operations must be protected by role-based authorization.
 
 ---
 
-# 5. Development Phases
+## 3. Development Phases
 
----
+### Phase 1: Project & Database Foundation
+> STATUS: ✅ COMPLETED | Goal: To set up the API foundation
 
-## Phase 1 — Project & Database Foundation
-
-### Status: ✅ Completed
-
-### 1.1 Project setup
+#### 1.1 Project setup
 
 - [x] Create NestJS project
 - [x] Configure TypeScript
@@ -145,7 +87,7 @@ Administrative and librarian operations must be protected by role-based authoriz
 - [x] Configure TypeORM
 - [x] Configure database connection
 
-### 1.2 Database entities
+#### 1.2 Database entities
 
 - [x] Create `Category` entity
 - [x] Create `Book` entity
@@ -158,7 +100,7 @@ Administrative and librarian operations must be protected by role-based authoriz
 - [x] Create `Return` entity
 - [x] Create `Fine` entity
 
-### 1.3 Entity relationships
+#### 1.3 Entity relationships
 
 - [x] Category → Books
 - [x] Book → Copies
@@ -171,7 +113,7 @@ Administrative and librarian operations must be protected by role-based authoriz
 - [x] Borrow → Fines
 - [x] Fines → User/Copy/Book
 
-### 1.4 Modules
+#### 1.4 Modules
 
 - [x] Books module
 - [x] Authors module
@@ -183,19 +125,16 @@ Administrative and librarian operations must be protected by role-based authoriz
 - [x] Returns module
 - [x] Fines module
 
-note: Phase 2 module
-- [ ] Auth module
+#### 1.5 Database migrations
 
-### 1.5 Database migrations
-
-- [x] Configure migration system
+- [x] Configure migration
 - [x] Generate initial schema migration
 - [x] Run initial migration
 - [x] Verify PostgreSQL tables
 - [x] Generate user ID type correction migration
 - [x] Run user ID migration
 
-### 1.6 CSV seed system
+#### 1.6 CSV seed
 
 - [x] Create CSV seed infrastructure
 - [x] Import roles
@@ -207,7 +146,7 @@ note: Phase 2 module
 - [x] Import book-author relationships
 - [x] Verify database row counts
 
-### Current seed verification
+#### Current seed verification
 
 ```text
 roles          = 3
@@ -219,7 +158,7 @@ copies         = 6,327
 book_authors   = 3,150
 ```
 
-### 1.7 API foundation
+#### 1.7 API foundation
 
 - [x] Create Books service
 - [x] Create Books controller
@@ -232,27 +171,12 @@ book_authors   = 3,150
 - [x] Configure API error handling
 - [x] Configure Swagger/OpenAPI
 
-### Phase 1 acceptance criteria
+> Acceptance Criteria: Phase 1 is considered completed when the database, entities, relationships, seed data, API, and Swagger endpoints are working without initialization or connection errors.
 
-Phase 1 is complete when:
+### Phase 2: Catalog Management API
+> STATUS: ✅ COMPLETED | Goal: To build the public/library catalog functionality
 
-- PostgreSQL schema is working
-- All foundational entities exist
-- Relationships are working
-- Seed data can be loaded
-- API can successfully read seeded data
-- Swagger documents the initial endpoints
-- No database connection or entity initialization errors remain
-
----
-
-# Phase 2 — Books & Catalog API
-
-### Status: ✅ Completed
-
-Build the public/library catalog functionality.
-
-### Books
+#### Books
 
 - [x] `GET /books`
 - [x] `GET /books/:id`
@@ -271,26 +195,26 @@ Build the public/library catalog functionality.
 - [x] Filter by `ARCHIVED`
 - [x] Swagger documentation
 
-### Categories
+#### Categories
 
 - [x] `GET /categories`
 - [x] `GET /categories/:id`
 
-### Authors
+#### Authors
 
 - [x] `GET /authors`
 - [x] `GET /authors/:id`
 - [x] Search author by `author_id` and return the author's book details
 - [x] Search book and return the book's author details
 
-### Users
+#### Users
 
 - [x] `GET /users`
 - [x] `GET /users/:id`
 - [x] Include role information in user response
 - [x] Nonexistent user returns 404
 
-### Copies
+#### Copies
 
 - [x] `GET /books/:id/copies`
 - [x] `POST /books/:id/copies`
@@ -298,10 +222,7 @@ Build the public/library catalog functionality.
 - [x] Return total copy count for a book
 - [x] Return available copy count for a book
 
-future module
-- [ ] Remove/deactivate copy functionality
-
-### Catalog requirements
+#### Catalog requirements
 
 - [x] Pagination
 - [x] Search by title
@@ -315,7 +236,7 @@ future module
 - [x] Available copy count
 - [x] Book lifecycle status
 
-### Borrow / Return / Fine API
+#### Borrow / Return / Fine API
 
 - [x] Create Borrow API
 - [x] Return borrowed copy
@@ -331,29 +252,12 @@ future module
 - [x] Record fine payment timestamp
 - [x] Expose `copy_id` in Fine API responses
 
-### Phase 2 acceptance criteria
+> Acceptance Criteria: Phase 2 is considered completed when a user can browse the library catalog and retrieve book, author, category, and copy information through documented REST endpoints.
 
-A user can browse the library catalog and retrieve book, author, category, and copy information through documented REST endpoints.
+### Phase 3: Authorization & Role-Based Access Control
+> STATUS: ⬜ PLANNED |  Goal: To implement role-based authorization and access control.
 
----
-
-# Phase 3 — Authentication & Authorization
-
-### Status: ⬜ Not Started
-
-Implement JWT authentication and role-based access control.
-
-### Authentication
-
-- [ ] Login endpoint
-- [ ] Password handling
-- [ ] Password hashing
-- [ ] JWT generation
-- [ ] JWT validation
-- [ ] Authentication guard
-- [ ] Current-user decorator
-
-### Authorization
+#### Authorization
 
 - [ ] Role decorator
 - [ ] Role guard
@@ -361,38 +265,31 @@ Implement JWT authentication and role-based access control.
 - [ ] LIBRARIAN permissions
 - [ ] MEMBER permissions
 
-### Access rules
+#### Role-Based Access Control (RBAC)
 
-#### ADMIN
+##### ADMIN
 
 - [ ] Manage users
 - [ ] Manage books
 - [ ] View reports
 
-#### LIBRARIAN
+##### LIBRARIAN
 
 - [ ] Manage books
 - [ ] Manage members
 - [ ] Issue books
 - [ ] Process returns
 
-#### MEMBER
+##### MEMBER
 
 - [ ] View books
 - [ ] View own borrows
 - [ ] View own fines
 
-### Phase 3 acceptance criteria
+> Acceptance Criteria: Phase 3 is considered completed when role-based authorization is enforced consistently across protected endpoints.
 
-Authentication and role-based authorization are enforced consistently across protected endpoints.
-
----
-
-# Phase 4 — Borrowing
-
-### Status: 🟢 In Progress
-
-Implement the core library transaction.
+### Phase 4: Borrowing
+> STATUS: ⏳ IN PROGRESS | Goal: To implement the core library transaction
 
 ### Borrow entity
 
@@ -449,19 +346,13 @@ Check available copy
 
 Borrowing and copy-status changes should be handled as one database transaction.
 
-### Phase 4 acceptance criteria
+> Acceptance Criteria: Phase 4 is considered completed when a valid member can borrow an available copy and the database remains consistent.
 
-A valid member can borrow an available copy and the database remains consistent.
+### Phase 5: Returns
 
----
+> STATUS: ⏳ IN PROGRESS | Goal: To implement the return workflow
 
-# Phase 5 — Returns
-
-### Status: 🟢 In Progress
-
-Implement the return workflow.
-
-### Return workflow
+#### Return workflow
 
 ```text
 Borrow
@@ -476,13 +367,13 @@ Process return
   └── Make copy available
 ```
 
-### Endpoints
+#### Endpoints
 
 - [x] Process return
 - [x] View return record
 - [x] View returned borrow history
 
-### Business rules
+#### Business rules
 
 - [x] Cannot return an already-returned borrow
 - [x] Return must reference the correct borrow
@@ -490,19 +381,13 @@ Process return
 - [x] Borrow becomes completed
 - [x] Return date recorded
 
-### Phase 5 acceptance criteria
+> Acceptance Criteria: Phase 5 is considered completed when a borrowed copy can be returned and all related records are updated consistently.
 
-A borrowed copy can be returned and all related records are updated consistently.
+### Phase 6: Overdue Tracking
 
----
+> Status: ⬜ PLANNED | Goal: To identify active borrows whose due date has passed
 
-# Phase 6 — Overdue Tracking
-
-### Status: ⬜ Not Started
-
-Identify active borrows whose due date has passed.
-
-### Requirements
+#### Requirements
 
 - [ ] Determine overdue status
 - [ ] Query overdue borrows
@@ -510,24 +395,17 @@ Identify active borrows whose due date has passed.
 - [ ] View overdue books
 - [ ] Prevent incorrect overdue calculations
 
-### Potential endpoints
+#### Endpoints
 
 - [ ] `GET /borrows/overdue`
 - [ ] `GET /users/:id/overdue`
 
-### Phase 6 acceptance criteria
+> Acceptance Criteria: Phase 6 is considered completed when the API can reliably identify currently overdue borrows.
 
-The API can reliably identify currently overdue borrows.
+### Phase 7: Fines
+> STATUS: ⏳ IN PROGRESS | Goal: To implement fines associated with overdue borrowing
 
----
-
-# Phase 7 — Fines
-
-### Status: 🟢 In Progress
-
-Implement fines associated with overdue borrowing.
-
-### Fine requirements
+#### Requirements
 
 - [x] Create fine entity
 - [x] Associate fine with borrow
@@ -543,7 +421,7 @@ Implement fines associated with overdue borrowing.
 - [x] Expose `copy_id` in fine responses
 - [ ] Prevent multiple fines for the same borrow when only one fine is allowed
 
-### Member access
+#### Member access
 
 Members can:
 
@@ -553,19 +431,12 @@ GET /me/fines
 
 but must not access another member's fines.
 
-### Phase 7 acceptance criteria
+> Acceptance Criteria: Phase 7 is considered completed when overdue borrowing can generate and expose the appropriate fine information.
 
-Overdue borrowing can generate and expose the appropriate fine information.
+### Phase 8: Reports
+> STATUS: ⬜ PLANNED | Goal: To implement administrative reporting
 
----
-
-# Phase 8 — Reports
-
-### Status: ⬜ Not Started
-
-Implement administrative reporting.
-
-### Potential reports
+#### List of Reports
 
 - [ ] Total books
 - [ ] Total copies
@@ -578,23 +449,16 @@ Implement administrative reporting.
 - [ ] Popular books
 - [ ] Borrowing history
 
-### Access
+#### Access
 
 Reports should be restricted to authorized administrative users.
 
-### Phase 8 acceptance criteria
+> Acceptance Criteria: Phase 8 is considered completed when authorized users can retrieve useful library operational statistics.
 
-Authorized users can retrieve useful library operational statistics.
+### Phase 9: Validation & Error Handling
+> STATUS: ⬜ PLANNED | Goal: To improve API reliability and developer experience
 
----
-
-# Phase 9 — Validation & Error Handling
-
-### Status: ⬜ Not Started
-
-Improve API reliability and developer experience.
-
-### Validation
+#### Validation
 
 - [ ] DTO validation
 - [ ] Required fields
@@ -604,7 +468,7 @@ Improve API reliability and developer experience.
 - [ ] Pagination validation
 - [ ] Search/filter validation
 
-### Error handling
+#### Error handling
 
 - [ ] 400 Bad Request
 - [ ] 401 Unauthorized
@@ -613,7 +477,7 @@ Improve API reliability and developer experience.
 - [ ] 409 Conflict
 - [ ] 500 Internal Server Error
 
-### Business errors
+#### Business errors
 
 - [ ] Book unavailable
 - [ ] Invalid borrow
@@ -623,32 +487,29 @@ Improve API reliability and developer experience.
 - [ ] Invalid copy
 - [ ] Unauthorized operation
 
----
+> Acceptance Criteria: Phase 9 is considered completed when all request validation, standard HTTP errors, and library-specific business errors are handled consistently with clear, appropriate API responses.
 
-# Phase 10 — Testing
+### Phase 10: Testing
+> Status: ⬜ PLANNED | Goal: To conduct unit, integration, and end-to-end tests
 
-### Status: ⬜ Not Started
-
-## Unit tests
+#### Unit tests
 
 - [ ] Books service
 - [ ] Users service
 - [ ] Borrow service
 - [ ] Return service
 - [ ] Fine service
-- [ ] Authentication
 - [ ] Authorization
 
-## Integration tests
+#### Integration tests
 
 - [ ] Database integration
 - [ ] Borrow transaction
 - [ ] Return transaction
 - [ ] Fine calculation
 
-## End-to-end tests
+#### End-to-end tests
 
-- [ ] Login
 - [ ] Browse books
 - [ ] Borrow book
 - [ ] Return book
@@ -656,7 +517,7 @@ Improve API reliability and developer experience.
 - [ ] Fine flow
 - [ ] Role restrictions
 
-### Critical test
+#### Critical test
 
 ```text
 Available copy
@@ -669,15 +530,13 @@ Return
       ↓
 copy available
 ```
+> Acceptance Criteria: Phase 10 is considered completed when unit, integration, and end-to-end tests cover the core library workflows and pass successfully, including authorization, borrowing, returning, overdue handling, and fine calculation.
 
----
+### Phase 11: API Documentation
 
-# Phase 11 — API Documentation
-
-### Status: 🟢 In Progress
+STATUS: ⏳ IN PROGRESS | Goal: To complete and maintain API documentation.
 
 - [x] Configure Swagger
-- [ ] Document authentication
 - [x] Document DTOs
 - [x] Document response schemas
 - [ ] Document error responses
@@ -685,214 +544,6 @@ copy available
 - [x] Add examples
 - [x] Verify all endpoints appear correctly
 
----
+> Acceptance Criteria: Phase 11 is considered completed when all API endpoints are correctly documented in Swagger, including DTOs, response schemas, error responses, role requirements, and relevant examples.
 
-# Phase 12 — Production Readiness
-
-### Status: ⬜ Not Started
-
-### Configuration
-
-- [ ] Production environment variables
-- [ ] Secure JWT configuration
-- [ ] Database configuration
-- [ ] CORS configuration
-- [ ] Logging configuration
-
-### Database
-
-- [ ] Review indexes
-- [ ] Review foreign keys
-- [ ] Review constraints
-- [ ] Migration strategy
-- [ ] Backup strategy
-
-### Security
-
-- [ ] Password security
-- [ ] JWT security
-- [ ] Input validation
-- [ ] Authorization checks
-- [ ] Rate limiting
-- [ ] Sensitive error handling
-
-### Deployment
-
-- [ ] Production build
-- [ ] Docker configuration
-- [ ] Database deployment
-- [ ] API deployment
-- [ ] Health check endpoint
-- [ ] Environment configuration
-
----
-
-# 6. Current Position
-
-## Completed
-
-```text
-Phase 1
-├── Project setup                 ✅
-├── PostgreSQL                    ✅
-├── TypeORM                       ✅
-├── Entities                      ✅
-├── Relationships                 ✅
-├── Migrations                    ✅
-├── CSV seed system               ✅
-├── Initial data import           ✅
-└── Database verification         ✅
-```
-
-## Current task
-
-```text
-Phase 1
-   ↓
-API foundation
-   ↓
-GET /books
-GET /books/:id
-GET /categories
-GET /authors
-...
-```
-
-## Immediate next milestone
-
-Build the first read-only API endpoints and verify that NestJS can retrieve the seeded PostgreSQL data.
-
----
-
-# 7. Development Principles
-
-## Work incrementally
-
-Each feature should follow:
-
-```text
-Entity
-  ↓
-Migration
-  ↓
-DTO
-  ↓
-Service
-  ↓
-Controller
-  ↓
-Validation
-  ↓
-Authorization
-  ↓
-Test
-  ↓
-Swagger documentation
-```
-
-## Database changes
-
-Do not manually modify production schema.
-
-Use:
-
-```text
-Entity change
-    ↓
-Generate migration
-    ↓
-Review migration
-    ↓
-Run migration
-```
-
-## Business logic
-
-Business rules should live primarily in services rather than controllers.
-
-Controllers should handle:
-
-```text
-HTTP request
-      ↓
-DTO validation
-      ↓
-Service
-      ↓
-HTTP response
-```
-
-## Transactions
-
-Operations that modify multiple related records should use database transactions where consistency is required.
-
-Example:
-
-```text
-Borrow book
-    ↓
-Create borrow
-    +
-Change copy status
-```
-
-Both operations should succeed or fail together.
-
----
-
-# 8. Definition of Done
-
-A feature is considered complete when:
-
-- [ ] Entity/database requirements are implemented
-- [ ] Migration exists where needed
-- [ ] DTOs are defined
-- [ ] Service logic is implemented
-- [ ] Controller endpoint is implemented
-- [ ] Validation is implemented
-- [ ] Authorization is implemented where required
-- [ ] Business rules are enforced
-- [ ] Error cases are handled
-- [ ] Tests exist for important behavior
-- [ ] Swagger documentation is updated
-- [ ] The application compiles successfully
-
----
-
-# 9. Progress Log
-
-## 2026-09-29
-
-### Database foundation completed
-
-Successfully imported:
-
-```text
-Roles:             3
-Categories:      165
-Authors:       2,418
-Books:         2,109
-Users:            55
-Copies:        6,327
-Book Authors:  3,150
-```
-
-### Important schema correction
-
-The original `users.user_id` type was changed from integer to varchar because the source dataset uses IDs such as:
-
-```text
-L001
-L002
-L003
-```
-
-Migration generated and applied successfully.
-
-### Current state
-
-Database foundation is working and verified.
-
-### Next task
-
-Begin API foundation with read-only catalog endpoints.
+### FUTURE SCOPE:  Phase 12 — Production Readiness
