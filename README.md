@@ -73,22 +73,7 @@ The project's package configuration and available development commands are defin
 
 The API is structured around the main library domain:
 
-```text
-Library Management API
-│
-├── Books
-│   ├── Authors
-│   ├── Categories
-│   └── Copies
-│
-├── Users
-│   └── Roles
-│
-└── Borrowing
-    ├── Returns
-    ├── Overdue
-    └── Fines
-```
+![High Level Architecture](docs/high-level-architecture)
 
 The planned database relationships are:
 
