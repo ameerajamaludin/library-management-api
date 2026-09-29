@@ -1,0 +1,96 @@
+Project library_management_api {
+  database_type: 'PostgreSQL'
+  Note: 'Library Management API'
+}
+
+Table categories {
+  category_id integer [pk]
+  category_parent_id integer
+  category_name varchar
+  category_slug varchar
+  category_description text
+  sort_order integer
+  is_active boolean
+}
+
+Table books {
+  openlibrary_work_id varchar [pk]
+  title varchar
+  description text
+  published_month integer
+  published_year integer
+  category_id integer
+  fiction_nonfiction varchar
+  isbn varchar
+  cover_image_small varchar
+  cover_image_medium varchar
+  cover_image_large varchar
+}
+
+Table authors {
+  author_id varchar [pk]
+  author_name varchar
+}
+
+Table book_authors {
+  openlibrary_work_id varchar
+  author_id varchar
+
+  Indexes {
+    (openlibrary_work_id, author_id) [pk]
+  }
+}
+
+Table roles {
+  role_id integer [pk]
+  role_name varchar
+}
+
+Table users {
+  user_id integer [pk]
+  name varchar
+  email varchar
+  role_id integer
+}
+
+Table copies {
+  copy_id integer [pk]
+  openlibrary_work_id varchar
+  barcode varchar
+  status varchar
+}
+
+Table borrows {
+  borrow_id integer [pk]
+  copy_id integer
+  user_id integer
+  borrow_date date
+  due_date date
+  status varchar
+}
+
+Table returns {
+  return_id integer [pk]
+  borrow_id integer
+  return_date date
+}
+
+Table fines {
+  fine_id integer [pk]
+  borrow_id integer
+  amount "decimal(10,2)"
+  status varchar
+  issued_date date
+}
+
+// Relationships
+Ref: categories.category_parent_id > categories.category_id
+Ref: books.category_id > categories.category_id
+Ref: book_authors.openlibrary_work_id > books.openlibrary_work_id
+Ref: book_authors.author_id > authors.author_id
+Ref: users.role_id > roles.role_id
+Ref: copies.openlibrary_work_id > books.openlibrary_work_id
+Ref: borrows.copy_id > copies.copy_id
+Ref: borrows.user_id > users.user_id
+Ref: returns.borrow_id - borrows.borrow_id
+Ref: fines.borrow_id > borrows.borrow_id

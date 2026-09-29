@@ -134,7 +134,7 @@ Administrative and librarian operations must be protected by role-based authoriz
 
 ## Phase 1 — Project & Database Foundation
 
-### Status: 🟢 In Progress - API Foundation completed
+### Status: ✅ Completed
 
 ### 1.1 Project setup
 
@@ -169,6 +169,7 @@ Administrative and librarian operations must be protected by role-based authoriz
 - [x] Copy → Borrows
 - [x] Borrow → Return
 - [x] Borrow → Fines
+- [x] Fines → User/Copy/Book
 
 ### 1.4 Modules
 
@@ -181,6 +182,8 @@ Administrative and librarian operations must be protected by role-based authoriz
 - [x] Borrows module
 - [x] Returns module
 - [x] Fines module
+
+note: Phase 2 module
 - [ ] Auth module
 
 ### 1.5 Database migrations
@@ -225,11 +228,11 @@ book_authors   = 3,150
 - [x] Create Users service/controller
 - [x] Create Copies service/controller
 - [x] Verify database queries through HTTP endpoints
-- [ ] Configure global validation
+- [x] Configure global validation
 - [x] Configure API error handling
 - [x] Configure Swagger/OpenAPI
 
-### Phase 1 exit criteria
+### Phase 1 acceptance criteria
 
 Phase 1 is complete when:
 
@@ -245,7 +248,7 @@ Phase 1 is complete when:
 
 # Phase 2 — Books & Catalog API
 
-### Status: 🟢 In Progress
+### Status: ✅ Completed
 
 Build the public/library catalog functionality.
 
@@ -294,6 +297,8 @@ Build the public/library catalog functionality.
 - [x] `PATCH /copies/:id`
 - [x] Return total copy count for a book
 - [x] Return available copy count for a book
+
+future module
 - [ ] Remove/deactivate copy functionality
 
 ### Catalog requirements
@@ -310,7 +315,23 @@ Build the public/library catalog functionality.
 - [x] Available copy count
 - [x] Book lifecycle status
 
-### Phase 2 exit criteria
+### Borrow / Return / Fine API
+
+- [x] Create Borrow API
+- [x] Return borrowed copy
+- [x] Automatically update copy status on borrow/return
+- [x] View borrow details with user, copy, and book
+- [x] View user's borrowing history
+- [x] View copy borrowing history
+- [x] Create Return API
+- [x] View return details with borrow information
+- [x] Create Fine API
+- [x] View fine details with user, copy, and book
+- [x] Pay Fine API
+- [x] Record fine payment timestamp
+- [x] Expose `copy_id` in Fine API responses
+
+### Phase 2 acceptance criteria
 
 A user can browse the library catalog and retrieve book, author, category, and copy information through documented REST endpoints.
 
@@ -361,7 +382,7 @@ Implement JWT authentication and role-based access control.
 - [ ] View own borrows
 - [ ] View own fines
 
-### Phase 3 exit criteria
+### Phase 3 acceptance criteria
 
 Authentication and role-based authorization are enforced consistently across protected endpoints.
 
@@ -428,7 +449,7 @@ Check available copy
 
 Borrowing and copy-status changes should be handled as one database transaction.
 
-### Phase 4 exit criteria
+### Phase 4 acceptance criteria
 
 A valid member can borrow an available copy and the database remains consistent.
 
@@ -469,7 +490,7 @@ Process return
 - [x] Borrow becomes completed
 - [x] Return date recorded
 
-### Phase 5 exit criteria
+### Phase 5 acceptance criteria
 
 A borrowed copy can be returned and all related records are updated consistently.
 
@@ -494,7 +515,7 @@ Identify active borrows whose due date has passed.
 - [ ] `GET /borrows/overdue`
 - [ ] `GET /users/:id/overdue`
 
-### Phase 6 exit criteria
+### Phase 6 acceptance criteria
 
 The API can reliably identify currently overdue borrows.
 
@@ -502,18 +523,25 @@ The API can reliably identify currently overdue borrows.
 
 # Phase 7 — Fines
 
-### Status: ⬜ Not Started
+### Status: 🟢 In Progress
 
 Implement fines associated with overdue borrowing.
 
 ### Fine requirements
 
-- [ ] Create fine entity
-- [ ] Associate fine with borrow
+- [x] Create fine entity
+- [x] Associate fine with borrow
 - [ ] Calculate overdue amount
-- [ ] Track fine status
-- [ ] View member fines
-- [ ] View individual fine
+- [x] Track fine status
+- [x] View member fines
+- [x] View individual fine
+- [x] Expose user information in fine responses
+- [x] Expose copy information in fine responses
+- [x] Expose book information in fine responses
+- [x] Pay fine
+- [x] Record payment timestamp
+- [x] Expose `copy_id` in fine responses
+- [ ] Prevent multiple fines for the same borrow when only one fine is allowed
 
 ### Member access
 
@@ -525,7 +553,7 @@ GET /me/fines
 
 but must not access another member's fines.
 
-### Phase 7 exit criteria
+### Phase 7 acceptance criteria
 
 Overdue borrowing can generate and expose the appropriate fine information.
 
@@ -554,7 +582,7 @@ Implement administrative reporting.
 
 Reports should be restricted to authorized administrative users.
 
-### Phase 8 exit criteria
+### Phase 8 acceptance criteria
 
 Authorized users can retrieve useful library operational statistics.
 

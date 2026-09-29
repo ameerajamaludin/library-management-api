@@ -24,42 +24,6 @@ export class FinesService {
     private readonly borrowsRepository: Repository<Borrow>,
   ) {}
 
-  private toResponse(fine: Fine) {
-    return {
-      fine_id: fine.fine_id,
-      copy_id: fine.borrow?.copy?.copy_id ?? null,
-      amount: fine.amount,
-      reason: fine.reason,
-      status: fine.status,
-      paid_at: fine.paid_at,
-
-      user: fine.borrow?.user
-        ? {
-            user_id: fine.borrow.user.user_id,
-            name: fine.borrow.user.name,
-            email: fine.borrow.user.email,
-          }
-        : null,
-
-      copy: fine.borrow?.copy
-        ? {
-            copy_id: fine.borrow.copy.copy_id,
-            barcode: fine.borrow.copy.barcode,
-            status: fine.borrow.copy.status,
-          }
-        : null,
-
-      book: fine.borrow?.copy?.book
-        ? {
-            openlibrary_work_id:
-              fine.borrow.copy.book.openlibrary_work_id,
-            title: fine.borrow.copy.book.title,
-            isbn: fine.borrow.copy.book.isbn,
-          }
-        : null,
-    };
-  }
-
   // ==========================================
   // POST /fines
   // ==========================================
@@ -111,7 +75,7 @@ export class FinesService {
   // ==========================================
 
   async findAll() {
-    const fines = await this.finesRepository.find({
+    return this.finesRepository.find({
       relations: {
         borrow: {
           user: true,
@@ -124,10 +88,6 @@ export class FinesService {
         fine_id: 'DESC',
       },
     });
-
-    return fines.map((fine) =>
-      this.toResponse(fine),
-    );
   }
 
   // ==========================================
@@ -156,7 +116,53 @@ export class FinesService {
       );
     }
 
-    return this.toResponse(fine);
+    return {
+      fine_id: fine.fine_id,
+
+      borrow_id: fine.borrow_id,
+
+      amount: fine.amount,
+
+      reason: fine.reason,
+
+      status: fine.status,
+
+      paid_at: fine.paid_at,
+
+      user: fine.borrow?.user
+        ? {
+            user_id:
+              fine.borrow.user.user_id,
+            name:
+              fine.borrow.user.name,
+            email:
+              fine.borrow.user.email,
+          }
+        : null,
+
+      copy: fine.borrow?.copy
+        ? {
+            copy_id:
+              fine.borrow.copy.copy_id,
+            barcode:
+              fine.borrow.copy.barcode,
+            status:
+              fine.borrow.copy.status,
+          }
+        : null,
+
+      book: fine.borrow?.copy?.book
+        ? {
+            openlibrary_work_id:
+              fine.borrow.copy.book
+                .openlibrary_work_id,
+            title:
+              fine.borrow.copy.book.title,
+            isbn:
+              fine.borrow.copy.book.isbn,
+          }
+        : null,
+    };
   }
 
   // ==========================================
@@ -179,7 +185,7 @@ export class FinesService {
       );
     }
 
-    const fines = await this.finesRepository.find({
+    return this.finesRepository.find({
       where: {
         borrow_id: borrowId,
       },
@@ -195,10 +201,6 @@ export class FinesService {
         fine_id: 'DESC',
       },
     });
-
-    return fines.map((fine) =>
-      this.toResponse(fine),
-    );
   }
 
   // ==========================================
@@ -228,38 +230,6 @@ export class FinesService {
     );
 
     return this.finesRepository.save(fine);
-  }
-
-  // ==========================================
-  // PATCH /fines/:id/pay
-  // ==========================================
-
-  async pay(id: number) {
-    const fine =
-      await this.finesRepository.findOne({
-        where: {
-          fine_id: id,
-        },
-      });
-
-    if (!fine) {
-      throw new NotFoundException(
-        `Fine ${id} not found`,
-      );
-    }
-
-    if (fine.status === 'PAID') {
-      throw new ConflictException(
-        `Fine ${id} has already been paid`,
-      );
-    }
-
-    fine.status = 'PAID';
-    fine.paid_at = new Date();
-
-    await this.finesRepository.save(fine);
-
-    return this.findOne(id);
   }
 
   // ==========================================

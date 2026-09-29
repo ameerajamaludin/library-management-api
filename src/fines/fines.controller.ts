@@ -65,7 +65,7 @@ export class FinesController {
   @ApiOperation({
     summary: 'List fines',
     description:
-      'Returns all fines with copy, user, and book information.',
+      'Returns all fines with related borrowing, user, copy, and book information.',
   })
   @ApiResponse({
     status: 200,
@@ -114,46 +114,6 @@ export class FinesController {
   }
 
   // ==========================================
-  // PATCH /fines/:id/pay
-  // ==========================================
-
-  @Patch(':id/pay')
-  @ApiOperation({
-    summary: 'Pay a fine',
-    description:
-      'Marks a fine as PAID and records the payment date and time automatically.',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'Fine ID',
-    example: 1,
-  })
-  @ApiResponse({
-    status: 200,
-    description:
-      'Fine paid successfully.',
-  })
-  @ApiResponse({
-    status: 404,
-    description:
-      'Fine not found.',
-  })
-  @ApiResponse({
-    status: 409,
-    description:
-      'Fine has already been paid.',
-  })
-  async pay(
-    @Param(
-      'id',
-      ParseIntPipe,
-    )
-    id: number,
-  ) {
-    return this.finesService.pay(id);
-  }
-
-  // ==========================================
   // GET /fines/:id
   // ==========================================
 
@@ -161,7 +121,7 @@ export class FinesController {
   @ApiOperation({
     summary: 'Get fine details',
     description:
-      'Returns fine details including copy, user, and book information.',
+      'Returns fine details including user, copy, and book information.',
   })
   @ApiParam({
     name: 'id',
