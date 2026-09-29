@@ -1,0 +1,56 @@
+user_id,name,email,role_id
+L001,Admin User,admin@perpustakaan.com,1
+L002,Alisa binti Ibrahim,alisa.ibrahim@perpustakaan.com,2
+L003,Amara binti Saddiq,amara.saddiq@perpustakaan.com,2
+L004,Ahmad bin Rahman,ahmad.rahman@perpustakaan.com,3
+L005,Aiman bin Hassan,aiman.hassan@perpustakaan.com,3
+L006,Aisyah binti Abdullah,aisyah.abdullah@perpustakaan.com,3
+L007,Alya binti Ismail,alya.ismail@perpustakaan.com,3
+L008,Amirul bin Hamzah,amirul.hamzah@perpustakaan.com,3
+L009,Anis binti Ahmad,anis.ahmad@perpustakaan.com,3
+L010,Azlan bin Osman,azlan.osman@perpustakaan.com,3
+L011,Balqis binti Zainal,balqis.zainal@perpustakaan.com,3
+L012,Danish bin Rosli,danish.rosli@perpustakaan.com,3
+L013,Feera binti Omar,feera.omar@perpustakaan.com,3
+L014,Farah binti Yusof,farah.yusof@perpustakaan.com,3
+L015,Faris bin Mahmud,faris.mahmud@perpustakaan.com,3
+L016,Hafiz bin Karim,hafiz.karim@perpustakaan.com,3
+L017,Hana binti Salleh,hana.salleh@perpustakaan.com,3
+L018,Hakim bin Razak,hakim.razak@perpustakaan.com,3
+L019,Iffah binti Halim,iffah.halim@perpustakaan.com,3
+L020,Irfan bin Latif,irfan.latif@perpustakaan.com,3
+L021,Izzati binti Hamid,izzati.hamid@perpustakaan.com,3
+L022,Jamal bin Ibrahim,jamal.ibrahim@perpustakaan.com,3
+L023,Jannah binti Rahim,jannah.rahim@perpustakaan.com,3
+L024,Kamal bin Iskandar,kamal.iskandar@perpustakaan.com,3
+L025,Khairul bin Azmi,khairul.azmi@perpustakaan.com,3
+L026,Laila binti Musa,laila.musa@perpustakaan.com,3
+L027,Luqman bin Shukri,luqman.shukri@perpustakaan.com,3
+L028,Maimunah binti Daud,maimunah.daud@perpustakaan.com,3
+L029,Mariam binti Saad,mariam.saad@perpustakaan.com,3
+L030,Nabil bin Fauzi,nabil.fauzi@perpustakaan.com,3
+L031,Nadia binti Kamal,nadia.kamal@perpustakaan.com,3
+L032,Naim bin Rahman,naim.rahman@perpustakaan.com,3
+L033,Nora binti Zakaria,nora.zakaria@perpustakaan.com,3
+L034,Nur Aina binti Hassan,nur.aina.hassan@perpustakaan.com,3
+L035,Nurul Iman binti Abdullah,nurul.iman.abdullah@perpustakaan.com,3
+L036,Puteri Aisyah binti Roslan,puteri.aisyah.roslan@perpustakaan.com,3
+L037,Rafiq bin Ahmad,rafiq.ahmad@perpustakaan.com,3
+L038,Raihan binti Omar,raihan.omar@perpustakaan.com,3
+L039,Razif bin Samad,razif.samad@perpustakaan.com,3
+L040,Sabrina binti Yusuf,sabrina.yusuf@perpustakaan.com,3
+L041,Safiq bin Salleh,safiq.salleh@perpustakaan.com,3
+L042,Siti Hajar binti Karim,siti.hajar.karim@perpustakaan.com,3
+L043,Siti Nurhaliza binti Hamzah,siti.nurhaliza.hamzah@perpustakaan.com,3
+L044,Syafiq bin Zulkifli,syafiq.zulkifli@perpustakaan.com,3
+L045,Syahirah binti Idris,syahirah.idris@perpustakaan.com,3
+L046,Taufiq bin Rahmat,taufiq.rahmat@perpustakaan.com,3
+L047,Umar bin Khalid,umar.khalid@perpustakaan.com,3
+L048,Wardah binti Harun,wardah.harun@perpustakaan.com,3
+L049,Yasmin binti Adnan,yasmin.adnan@perpustakaan.com,3
+L050,Yusof bin Wahid,yusof.wahid@perpustakaan.com,3
+L051,Zahra binti Rosli,zahra.rosli@perpustakaan.com,3
+L052,Zainal bin Rahim,zainal.rahim@perpustakaan.com,3
+L053,Zulaikha binti Mansor,zulaikha.mansor@perpustakaan.com,3
+L054,Fatin Nabila binti Razali,fatin.nabila.razali@perpustakaan.com,3
+L055,Muhammad Danish bin Azhar,muhammad.danish.azhar@perpustakaan.com,3
