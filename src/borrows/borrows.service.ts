@@ -31,7 +31,7 @@ export class BorrowsService {
     private readonly copiesRepository: Repository<Copy>,
 
     @InjectRepository(Return)
-    private readonly returnsRepository: Repository<Return>,
+private readonly returnsRepository: Repository<Return>,
   ) {}
 
   // ==========================================
@@ -74,26 +74,6 @@ export class BorrowsService {
       due_at: borrow.due_at,
 
       returned_at: borrow.returned_at,
-
-      returnRecord: borrow.returnRecord
-        ? {
-            return_id: borrow.returnRecord.return_id,
-            borrow_id: borrow.returnRecord.borrow_id,
-            returned_at: borrow.returnRecord.returned_at,
-            condition: borrow.returnRecord.condition,
-            notes: borrow.returnRecord.notes,
-          }
-        : null,
-
-      fines: (borrow.fines ?? []).map(
-        (fine) => ({
-          fine_id: fine.fine_id,
-          amount: fine.amount,
-          reason: fine.reason,
-          status: fine.status,
-          paid_at: fine.paid_at,
-        }),
-      ),
     };
   }
 
@@ -109,6 +89,10 @@ export class BorrowsService {
       copy_id,
     } = createBorrowDto;
 
+    // ------------------------------------------
+    // Check user
+    // ------------------------------------------
+
     const user =
       await this.usersRepository.findOne({
         where: {
@@ -121,6 +105,10 @@ export class BorrowsService {
         `User ${user_id} not found`,
       );
     }
+
+    // ------------------------------------------
+    // Check copy
+    // ------------------------------------------
 
     const copy =
       await this.copiesRepository.findOne({
@@ -138,11 +126,19 @@ export class BorrowsService {
       );
     }
 
+    // ------------------------------------------
+    // Check availability
+    // ------------------------------------------
+
     if (copy.status !== 'AVAILABLE') {
       throw new ConflictException(
         `Copy ${copy_id} is not available`,
       );
     }
+
+    // ------------------------------------------
+    // Create borrowing dates
+    // ------------------------------------------
 
     const borrowedAt = new Date();
 
@@ -151,6 +147,10 @@ export class BorrowsService {
     dueAt.setDate(
       dueAt.getDate() + 14,
     );
+
+    // ------------------------------------------
+    // Create borrowing record
+    // ------------------------------------------
 
     const borrow =
       this.borrowsRepository.create({
@@ -165,43 +165,39 @@ export class BorrowsService {
       borrow,
     );
 
+    // ------------------------------------------
+    // Change copy status
+    // ------------------------------------------
+
     copy.status = 'BORROWED';
 
     await this.copiesRepository.save(copy);
 
-    return this.findOne(
-      borrow.borrow_id,
-    );
-  }
+    // ------------------------------------------
+    // Reload complete borrowing
+    // ------------------------------------------
 
-  // ==========================================
-  // GET /borrows/:id
-  // ==========================================
-
-  async findOne(id: number): Promise<BorrowResponseDto> {
-    const borrow =
+    const completeBorrow =
       await this.borrowsRepository.findOne({
         where: {
-          borrow_id: id,
+          borrow_id: borrow.borrow_id,
         },
         relations: {
           user: true,
           copy: {
             book: true,
           },
-          returnRecord: true,
-          fines: true,
         },
       });
 
-    if (!borrow) {
+    if (!completeBorrow) {
       throw new NotFoundException(
-        `Borrow ${id} not found`,
+        `Borrow ${borrow.borrow_id} not found`,
       );
     }
 
     return this.buildResponse(
-      borrow,
+      completeBorrow,
     );
   }
 
@@ -209,72 +205,98 @@ export class BorrowsService {
   // POST /borrows/copy/:copyId/return
   // ==========================================
 
-  async returnByCopyId(
-    copyId: number,
-    returnBorrowDto: ReturnBorrowDto,
-  ): Promise<BorrowResponseDto> {
-    const copy =
-      await this.copiesRepository.findOne({
-        where: {
-          copy_id: copyId,
-        },
-        relations: {
-          book: true,
-        },
-      });
+async returnByCopyId(
+  copyId: number,
+  returnBorrowDto: ReturnBorrowDto,
+): Promise<BorrowResponseDto> {
+  // ------------------------------------------
+  // Check copy
+  // ------------------------------------------
 
-    if (!copy) {
-      throw new NotFoundException(
-        `Copy ${copyId} not found`,
-      );
-    }
+  const copy =
+    await this.copiesRepository.findOne({
+      where: {
+        copy_id: copyId,
+      },
+      relations: {
+        book: true,
+      },
+    });
 
-    const borrow =
-      await this.borrowsRepository.findOne({
-        where: {
-          copy_id: copyId,
-          returned_at: IsNull(),
-        },
-        relations: {
-          user: true,
-          copy: {
-            book: true,
-          },
-        },
-      });
-
-    if (!borrow) {
-      throw new ConflictException(
-        `Copy ${copyId} has no active borrowing`,
-      );
-    }
-
-    const returnedAt = new Date();
-
-    borrow.returned_at = returnedAt;
-
-    await this.borrowsRepository.save(
-      borrow,
-    );
-
-    const returnRecord =
-      this.returnsRepository.create({
-        borrow_id: borrow.borrow_id,
-        returned_at: returnedAt,
-        condition: returnBorrowDto.condition,
-        notes: returnBorrowDto.notes ?? null,
-      });
-
-    await this.returnsRepository.save(
-      returnRecord,
-    );
-
-    copy.status = 'AVAILABLE';
-
-    await this.copiesRepository.save(copy);
-
-    return this.findOne(
-      borrow.borrow_id,
+  if (!copy) {
+    throw new NotFoundException(
+      `Copy ${copyId} not found`,
     );
   }
+
+  // ------------------------------------------
+  // Find active borrowing
+  // ------------------------------------------
+
+  const borrow =
+    await this.borrowsRepository.findOne({
+      where: {
+        copy_id: copyId,
+        returned_at: IsNull(),
+      },
+      relations: {
+        user: true,
+        copy: {
+          book: true,
+        },
+      },
+    });
+
+  if (!borrow) {
+    throw new ConflictException(
+      `Copy ${copyId} has no active borrowing`,
+    );
+  }
+
+  // ------------------------------------------
+  // Mark borrowing as returned
+  // ------------------------------------------
+
+  const returnedAt = new Date();
+
+  borrow.returned_at = returnedAt;
+
+  await this.borrowsRepository.save(
+    borrow,
+  );
+
+  // ------------------------------------------
+  // Create return record
+  // ------------------------------------------
+
+  const returnRecord =
+    this.returnsRepository.create({
+      borrow_id: borrow.borrow_id,
+      returned_at: returnedAt,
+      condition: returnBorrowDto.condition,
+      notes: returnBorrowDto.notes ?? null,
+    });
+
+  await this.returnsRepository.save(
+    returnRecord,
+  );
+
+  // ------------------------------------------
+  // Make copy available
+  // ------------------------------------------
+
+  copy.status = 'AVAILABLE';
+
+  await this.copiesRepository.save(copy);
+
+  // ------------------------------------------
+  // Update response copy status
+  // ------------------------------------------
+
+  borrow.copy.status = 'AVAILABLE';
+
+  return this.buildResponse(
+    borrow,
+  );
+}
 }

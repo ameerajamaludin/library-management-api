@@ -160,8 +160,6 @@ export class CopiesService {
 
           borrows: {
             user: true,
-            returnRecord: true,
-            fines: true,
           },
         },
       });
@@ -177,82 +175,6 @@ export class CopiesService {
         (borrow) =>
           borrow.returned_at === null,
       );
-
-    const mapBorrow = (borrow: typeof copy.borrows[number]) => ({
-      borrow_id:
-        borrow.borrow_id,
-
-      user_id:
-        borrow.user_id,
-
-      user: {
-        user_id:
-          borrow.user.user_id,
-
-        name:
-          borrow.user.name,
-
-        email:
-          borrow.user.email,
-      },
-
-      copy_id:
-        borrow.copy_id,
-
-      borrowed_at:
-        borrow.borrowed_at,
-
-      due_at:
-        borrow.due_at,
-
-      returned_at:
-        borrow.returned_at,
-
-      returnRecord:
-        borrow.returnRecord
-          ? {
-              return_id:
-                borrow.returnRecord
-                  .return_id,
-
-              borrow_id:
-                borrow.returnRecord
-                  .borrow_id,
-
-              returned_at:
-                borrow.returnRecord
-                  .returned_at,
-
-              condition:
-                borrow.returnRecord
-                  .condition,
-
-              notes:
-                borrow.returnRecord
-                  .notes,
-            }
-          : null,
-
-      fines:
-        (borrow.fines ?? []).map(
-          (fine) => ({
-            fine_id:
-              fine.fine_id,
-
-            amount:
-              fine.amount,
-
-            reason:
-              fine.reason,
-
-            status:
-              fine.status,
-
-            paid_at:
-              fine.paid_at,
-          }),
-        ),
-    });
 
     return {
       copy_id: copy.copy_id,
@@ -271,17 +193,37 @@ export class CopiesService {
       },
 
       currentBorrow: activeBorrow
-        ? mapBorrow(activeBorrow)
-        : null,
+        ? {
+            borrow_id:
+              activeBorrow.borrow_id,
 
-      borrowHistory:
-        copy.borrows
-          .sort(
-            (a, b) =>
-              b.borrow_id -
-              a.borrow_id,
-          )
-          .map(mapBorrow),
+            user_id:
+              activeBorrow.user_id,
+
+            user: {
+              user_id:
+                activeBorrow.user.user_id,
+
+              name:
+                activeBorrow.user.name,
+
+              email:
+                activeBorrow.user.email,
+            },
+
+            copy_id:
+              activeBorrow.copy_id,
+
+            borrowed_at:
+              activeBorrow.borrowed_at,
+
+            due_at:
+              activeBorrow.due_at,
+
+            returned_at:
+              activeBorrow.returned_at,
+          }
+        : null,
     };
   }
 
@@ -312,8 +254,6 @@ export class CopiesService {
 
       relations: {
         user: true,
-        returnRecord: true,
-        fines: true,
       },
 
       order: {

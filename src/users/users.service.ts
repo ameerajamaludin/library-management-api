@@ -41,8 +41,6 @@ export class UsersService {
             copy: {
               book: true,
             },
-            returnRecord: true,
-            fines: true,
           },
         },
       });
@@ -101,51 +99,6 @@ export class UsersService {
 
           returned_at:
             borrow.returned_at,
-
-          returnRecord:
-            borrow.returnRecord
-              ? {
-                  return_id:
-                    borrow.returnRecord
-                      .return_id,
-
-                  borrow_id:
-                    borrow.returnRecord
-                      .borrow_id,
-
-                  returned_at:
-                    borrow.returnRecord
-                      .returned_at,
-
-                  condition:
-                    borrow.returnRecord
-                      .condition,
-
-                  notes:
-                    borrow.returnRecord
-                      .notes,
-                }
-              : null,
-
-          fines:
-            (borrow.fines ?? []).map(
-              (fine) => ({
-                fine_id:
-                  fine.fine_id,
-
-                amount:
-                  fine.amount,
-
-                reason:
-                  fine.reason,
-
-                status:
-                  fine.status,
-
-                paid_at:
-                  fine.paid_at,
-              }),
-            ),
         }),
       ),
     };

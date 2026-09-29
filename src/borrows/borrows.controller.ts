@@ -3,7 +3,6 @@ import {
   Controller,
   Param,
   ParseIntPipe,
-  Get,
   Post,
 } from '@nestjs/common';
 
@@ -58,36 +57,6 @@ export class BorrowsController {
     return this.borrowsService.create(
       createBorrowDto,
     );
-  }
-
-  // ==========================================
-  // GET /borrows/:id
-  // ==========================================
-
-  @Get(':id')
-  @ApiOperation({
-    summary: 'Get borrow details',
-    description:
-      'Returns borrowing details including user, copy, book, return, and fine information.',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'Borrow ID',
-    example: 6,
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Borrow details.',
-    type: BorrowResponseDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Borrow not found.',
-  })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<BorrowResponseDto> {
-    return this.borrowsService.findOne(id);
   }
 
   // ==========================================
