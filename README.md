@@ -75,29 +75,9 @@ The API is structured around the main library domain:
 
 ![High Level Architecture](docs/high-level-architecture.png)
 
-The planned database relationships are:
+The Entity Relationship Diagram (ERD) illustrates the main entities in the library management system and the relationships between them.
 
-```text
-categories
-    │
-    └── books
-          │
-          ├── copies
-          │
-          └── book_authors
-                 │
-                 └── authors
-
-roles
-    │
-    └── users
-          │
-          └── borrows
-                 │
-                 ├── copies
-                 ├── returns
-                 └── fines
-```
+![ERD](docs/ERD.png)
 
 These relationships follow the project's development roadmap.
 
