@@ -73,7 +73,7 @@ The project's package configuration and available development commands are defin
 
 The API is structured around the main library domain:
 
-![High Level Architecture](docs/high-level-architecture)
+![High Level Architecture](docs/high-level-architecture.png)
 
 The planned database relationships are:
 
