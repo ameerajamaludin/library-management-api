@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConflictException } from '@nestjs/common';
+
+import { UsersModule } from '../users/users.module';
 
 import { Book } from './entities/book.entity';
 import { BookAuthor } from './entities/book-author.entity';
@@ -15,8 +16,9 @@ import { Copy } from '../copies/entities/copy.entity';
       Book,
       BookAuthor,
       Author,
-      Copy
+      Copy,
     ]),
+    UsersModule,
   ],
   controllers: [BooksController],
   providers: [BooksService],

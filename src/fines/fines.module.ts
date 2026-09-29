@@ -7,12 +7,15 @@ import { Borrow } from '../borrows/entities/borrow.entity';
 import { FinesService } from './fines.service';
 import { FinesController } from './fines.controller';
 
+import { UsersModule } from '../users/users.module';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Fine,
       Borrow,
     ]),
+    UsersModule
   ],
 
   controllers: [

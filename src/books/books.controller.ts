@@ -24,6 +24,11 @@ import { BooksQueryDto } from './dto/books-query.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 
 import { Author } from '../authors/entities/author.entity';
+import { UseGuards } from '@nestjs/common';
+import { ApiHeader } from '@nestjs/swagger';
+import { Roles } from '../common/authorization/decorators/roles.decorator';
+import { UserIdGuard } from '../common/authorization/guards/user-id.guard';
+import { RolesGuard } from '../common/authorization/guards/roles.guard';
 
 @ApiTags('Books')
 @Controller('books')
@@ -123,6 +128,9 @@ export class BooksController {
   // ==========================================
 
   @Post()
+  @UseGuards(UserIdGuard, RolesGuard)
+  @Roles('ADMIN', 'LIBRARIAN')
+  @ApiHeader({ name: 'User-Id', required: true, description: 'Library user ID used for authorization.', example: 'L001' })
   @ApiOperation({
     summary: 'Create a book',
     description: 'Creates a new book in the library catalog.',
@@ -205,6 +213,9 @@ export class BooksController {
   // ==========================================
 
   @Patch(':id')
+  @UseGuards(UserIdGuard, RolesGuard)
+  @Roles('ADMIN', 'LIBRARIAN')
+  @ApiHeader({ name: 'User-Id', required: true, description: 'Library user ID used for authorization.', example: 'L001' })
   @ApiOperation({
     summary: 'Update a book',
     description:
@@ -233,6 +244,9 @@ export class BooksController {
   // ==========================================
 
   @Delete(':id')
+  @UseGuards(UserIdGuard, RolesGuard)
+  @Roles('ADMIN', 'LIBRARIAN')
+  @ApiHeader({ name: 'User-Id', required: true, description: 'Library user ID used for authorization.', example: 'L001' })
   @ApiOperation({
     summary: 'Delete a book',
     description:

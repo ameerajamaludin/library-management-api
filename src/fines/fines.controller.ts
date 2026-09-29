@@ -20,6 +20,11 @@ import { FinesService } from './fines.service';
 
 import { CreateFineDto } from './dto/create-fine.dto';
 import { UpdateFineDto } from './dto/update-fine.dto';
+import { UseGuards, Req } from '@nestjs/common';
+import { ApiHeader } from '@nestjs/swagger';
+import { Roles } from '../common/authorization/decorators/roles.decorator';
+import { UserIdGuard } from '../common/authorization/guards/user-id.guard';
+import { RolesGuard } from '../common/authorization/guards/roles.guard';
 
 @ApiTags('Fines')
 @Controller('fines')
@@ -33,6 +38,9 @@ export class FinesController {
   // ==========================================
 
   @Post()
+  @UseGuards(UserIdGuard, RolesGuard)
+  @Roles('ADMIN', 'LIBRARIAN')
+  @ApiHeader({ name: 'User-Id', required: true, description: 'Library user ID used for authorization.', example: 'L001' })
   @ApiOperation({
     summary: 'Create a fine',
     description:
@@ -48,6 +56,11 @@ export class FinesController {
     description:
       'Borrow not found.',
   })
+  @ApiResponse({
+    status: 409,
+    description:
+      'A fine already exists for this borrow.',
+  })
   async create(
     @Body()
     createFineDto: CreateFineDto,
@@ -57,11 +70,59 @@ export class FinesController {
     );
   }
 
+
+  // ==========================================
+  // POST /fines/overdue/:borrowId
+  // ==========================================
+
+  @Post('overdue/:borrowId')
+  @UseGuards(UserIdGuard, RolesGuard)
+  @Roles('ADMIN', 'LIBRARIAN')
+  @ApiHeader({
+    name: 'User-Id',
+    required: true,
+    description: 'Library user ID used for authorization.',
+    example: 'L001',
+  })
+  @ApiOperation({
+    summary: 'Create an overdue fine',
+    description:
+      'Calculates and creates one fine for an overdue borrow. The amount is calculated as overdue days multiplied by FINE_PER_DAY.',
+  })
+  @ApiParam({
+    name: 'borrowId',
+    description: 'Borrow ID',
+    example: 6,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Overdue fine created successfully.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Borrow not found.',
+  })
+  @ApiResponse({
+    status: 409,
+    description:
+      'Borrow is not overdue or already has a fine.',
+  })
+  async createForOverdueBorrow(
+    @Param('borrowId', ParseIntPipe) borrowId: number,
+  ) {
+    return this.finesService.createForOverdueBorrow(
+      borrowId,
+    );
+  }
+
   // ==========================================
   // GET /fines
   // ==========================================
 
   @Get()
+  @UseGuards(UserIdGuard, RolesGuard)
+  @Roles('ADMIN', 'LIBRARIAN', 'MEMBER')
+  @ApiHeader({ name: 'User-Id', required: true, description: 'Library user ID used for authorization.', example: 'L007' })
   @ApiOperation({
     summary: 'List fines',
     description:
@@ -72,8 +133,13 @@ export class FinesController {
     description:
       'List of fines.',
   })
-  async findAll() {
-    return this.finesService.findAll();
+  async findAll(
+    @Req() request: any,
+  ) {
+    return this.finesService.findAll(
+      request.user.user_id,
+      request.user.role.role_name,
+    );
   }
 
   // ==========================================
@@ -81,6 +147,9 @@ export class FinesController {
   // ==========================================
 
   @Get('borrow/:borrowId')
+  @UseGuards(UserIdGuard, RolesGuard)
+  @Roles('ADMIN', 'LIBRARIAN', 'MEMBER')
+  @ApiHeader({ name: 'User-Id', required: true, description: 'Library user ID used for authorization.', example: 'L007' })
   @ApiOperation({
     summary: 'Get fines for a borrow',
     description:
@@ -107,9 +176,12 @@ export class FinesController {
       ParseIntPipe,
     )
     borrowId: number,
+    @Req() request: any,
   ) {
     return this.finesService.findByBorrowId(
       borrowId,
+      request.user.user_id,
+      request.user.role.role_name,
     );
   }
 
@@ -118,6 +190,9 @@ export class FinesController {
   // ==========================================
 
   @Get(':id')
+  @UseGuards(UserIdGuard, RolesGuard)
+  @Roles('ADMIN', 'LIBRARIAN', 'MEMBER')
+  @ApiHeader({ name: 'User-Id', required: true, description: 'Library user ID used for authorization.', example: 'L007' })
   @ApiOperation({
     summary: 'Get fine details',
     description:
@@ -144,8 +219,45 @@ export class FinesController {
       ParseIntPipe,
     )
     id: number,
+    @Req() request: any,
   ) {
-    return this.finesService.findOne(id);
+    return this.finesService.findOne(
+      id,
+      request.user.user_id,
+      request.user.role.role_name,
+    );
+  }
+
+  // ==========================================
+  // POST /fines/:id/pay
+  // ==========================================
+
+  @Post(':id/pay')
+  @UseGuards(UserIdGuard, RolesGuard)
+  @Roles('ADMIN', 'LIBRARIAN', 'MEMBER')
+  @ApiHeader({ name: 'User-Id', required: true, description: 'Library user ID used for authorization.', example: 'L007' })
+  @ApiOperation({
+    summary: 'Pay a fine',
+    description: 'Marks a fine as PAID. Members can only pay their own fines.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Fine ID',
+    example: 1,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Fine paid successfully.',
+  })
+  async pay(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: any,
+  ) {
+    return this.finesService.pay(
+      id,
+      request.user.user_id,
+      request.user.role.role_name,
+    );
   }
 
   // ==========================================
@@ -153,6 +265,9 @@ export class FinesController {
   // ==========================================
 
   @Patch(':id')
+  @UseGuards(UserIdGuard, RolesGuard)
+  @Roles('ADMIN', 'LIBRARIAN')
+  @ApiHeader({ name: 'User-Id', required: true, description: 'Library user ID used for authorization.', example: 'L001' })
   @ApiOperation({
     summary: 'Update a fine',
     description:
@@ -194,6 +309,9 @@ export class FinesController {
   // ==========================================
 
   @Delete(':id')
+  @UseGuards(UserIdGuard, RolesGuard)
+  @Roles('ADMIN', 'LIBRARIAN')
+  @ApiHeader({ name: 'User-Id', required: true, description: 'Library user ID used for authorization.', example: 'L001' })
   @ApiOperation({
     summary: 'Delete a fine',
     description:

@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IsNull,
+  LessThan,
   Repository,
 } from 'typeorm';
 
@@ -83,11 +84,22 @@ private readonly returnsRepository: Repository<Return>,
 
   async create(
     createBorrowDto: CreateBorrowDto,
+    requesterUserId?: string,
+    requesterRole?: string,
   ): Promise<BorrowResponseDto> {
     const {
       user_id,
       copy_id,
     } = createBorrowDto;
+
+    if (
+      requesterRole?.toUpperCase() === 'MEMBER' &&
+      requesterUserId !== user_id
+    ) {
+      throw new ConflictException(
+        'Members can only borrow books for themselves',
+      );
+    }
 
     // ------------------------------------------
     // Check user
@@ -201,6 +213,34 @@ private readonly returnsRepository: Repository<Return>,
     );
   }
 
+
+  // ==========================================
+  // GET /borrows/overdue
+  // ==========================================
+
+  async findOverdue(): Promise<BorrowResponseDto[]> {
+    const overdueBorrows =
+      await this.borrowsRepository.find({
+        where: {
+          returned_at: IsNull(),
+          due_at: LessThan(new Date()),
+        },
+        relations: {
+          user: true,
+          copy: {
+            book: true,
+          },
+        },
+        order: {
+          due_at: 'ASC',
+        },
+      });
+
+    return overdueBorrows.map((borrow) =>
+      this.buildResponse(borrow),
+    );
+  }
+
   // ==========================================
   // POST /borrows/copy/:copyId/return
   // ==========================================
@@ -208,6 +248,8 @@ private readonly returnsRepository: Repository<Return>,
 async returnByCopyId(
   copyId: number,
   returnBorrowDto: ReturnBorrowDto,
+  requesterUserId?: string,
+  requesterRole?: string,
 ): Promise<BorrowResponseDto> {
   // ------------------------------------------
   // Check copy
@@ -250,6 +292,15 @@ async returnByCopyId(
   if (!borrow) {
     throw new ConflictException(
       `Copy ${copyId} has no active borrowing`,
+    );
+  }
+
+  if (
+    requesterRole?.toUpperCase() === 'MEMBER' &&
+    requesterUserId !== borrow.user_id
+  ) {
+    throw new ConflictException(
+      'Members can only return their own borrowed books',
     );
   }
 

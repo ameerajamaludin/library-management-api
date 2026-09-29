@@ -11,6 +11,7 @@ import { CopiesModule } from './copies/copies.module';
 import { BorrowsModule } from './borrows/borrows.module';
 import { ReturnsModule } from './returns/returns.module';
 import { FinesModule } from './fines/fines.module';
+import { AuthorizationModule } from './common/authorization/authorization.module';
 
 
 @Module({
@@ -45,6 +46,7 @@ import { FinesModule } from './fines/fines.module';
     BorrowsModule,
     ReturnsModule,
     FinesModule,
+    AuthorizationModule,
   ],
 })
 export class AppModule {}

@@ -15,16 +15,10 @@ import { UsersService } from './users.service';
     ]),
   ],
 
-  controllers: [
-    UsersController,
-  ],
+  controllers: [UsersController],
 
-  providers: [
-    UsersService,
-  ],
+  providers: [UsersService],
 
-  exports: [
-    UsersService,
-  ],
+  exports: [UsersService],
 })
 export class UsersModule {}

@@ -24,7 +24,6 @@ async function bootstrap() {
       'API for managing books, members, borrowing, returns, overdue tracking, and fines.',
     )
     .setVersion('1.0')
-    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(

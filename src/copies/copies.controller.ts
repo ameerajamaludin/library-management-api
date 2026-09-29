@@ -22,6 +22,11 @@ import {
 } from './dto/copy-response.dto';
 
 import { UpdateCopyDto } from './dto/update-copy.dto';
+import { UseGuards } from '@nestjs/common';
+import { ApiHeader } from '@nestjs/swagger';
+import { Roles } from '../common/authorization/decorators/roles.decorator';
+import { UserIdGuard } from '../common/authorization/guards/user-id.guard';
+import { RolesGuard } from '../common/authorization/guards/roles.guard';
 
 @ApiTags('Copies')
 @Controller('copies')
@@ -95,6 +100,9 @@ export class CopiesController {
   // ==========================================
 
   @Patch(':id')
+  @UseGuards(UserIdGuard, RolesGuard)
+  @Roles('ADMIN', 'LIBRARIAN')
+  @ApiHeader({ name: 'User-Id', required: true, description: 'Library user ID used for authorization.', example: 'L001' })
   @ApiOperation({
     summary: 'Update copy',
     description:

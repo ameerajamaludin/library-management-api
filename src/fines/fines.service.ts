@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -13,6 +14,8 @@ import { Borrow } from '../borrows/entities/borrow.entity';
 
 import { CreateFineDto } from './dto/create-fine.dto';
 import { UpdateFineDto } from './dto/update-fine.dto';
+
+const DEFAULT_FINE_PER_DAY = 1;
 
 @Injectable()
 export class FinesService {
@@ -51,6 +54,18 @@ export class FinesService {
       );
     }
 
+    const existingFine = await this.finesRepository.findOne({
+      where: {
+        borrow_id: createFineDto.borrow_id,
+      },
+    });
+
+    if (existingFine) {
+      throw new ConflictException(
+        `A fine already exists for borrow ${createFineDto.borrow_id}`,
+      );
+    }
+
     const fine =
       this.finesRepository.create({
         borrow_id:
@@ -70,12 +85,95 @@ export class FinesService {
     );
   }
 
+
+  // ==========================================
+  // POST /fines/overdue/:borrowId
+  // ==========================================
+
+  async createForOverdueBorrow(
+    borrowId: number,
+  ) {
+    const borrow = await this.borrowsRepository.findOne({
+      where: { borrow_id: borrowId },
+      relations: {
+        user: true,
+        copy: {
+          book: true,
+        },
+      },
+    });
+
+    if (!borrow) {
+      throw new NotFoundException(
+        `Borrow ${borrowId} not found`,
+      );
+    }
+
+    const asOf = borrow.returned_at ?? new Date();
+
+    if (borrow.due_at >= asOf) {
+      throw new ConflictException(
+        `Borrow ${borrowId} is not overdue`,
+      );
+    }
+
+    const existingFine = await this.finesRepository.findOne({
+      where: { borrow_id: borrowId },
+    });
+
+    if (existingFine) {
+      throw new ConflictException(
+        `A fine already exists for borrow ${borrowId}`,
+      );
+    }
+
+    const overdueDays = Math.max(
+      1,
+      Math.ceil(
+        (asOf.getTime() - borrow.due_at.getTime()) /
+          (1000 * 60 * 60 * 24),
+      ),
+    );
+
+    const dailyRate = this.getDailyFineRate();
+    const amount = Number(
+      (overdueDays * dailyRate).toFixed(2),
+    );
+
+    const fine = this.finesRepository.create({
+      borrow_id: borrowId,
+      amount,
+      reason: 'Late return',
+      status: 'UNPAID',
+      paid_at: null,
+    });
+
+    const savedFine = await this.finesRepository.save(fine);
+
+    return this.findOne(savedFine.fine_id);
+  }
+
+  private getDailyFineRate(): number {
+    const configuredRate = Number(
+      process.env.FINE_PER_DAY,
+    );
+
+    if (Number.isFinite(configuredRate) && configuredRate >= 0) {
+      return configuredRate;
+    }
+
+    return DEFAULT_FINE_PER_DAY;
+  }
+
   // ==========================================
   // GET /fines
   // ==========================================
 
-  async findAll() {
-    return this.finesRepository.find({
+  async findAll(
+    requesterUserId?: string,
+    requesterRole?: string,
+  ) {
+    const fines = await this.finesRepository.find({
       relations: {
         borrow: {
           user: true,
@@ -88,13 +186,26 @@ export class FinesService {
         fine_id: 'DESC',
       },
     });
+
+    if (requesterRole?.toUpperCase() === 'MEMBER') {
+      return fines.filter(
+        (fine) =>
+          fine.borrow?.user?.user_id === requesterUserId,
+      );
+    }
+
+    return fines;
   }
 
   // ==========================================
   // GET /fines/:id
   // ==========================================
 
-  async findOne(id: number) {
+  async findOne(
+    id: number,
+    requesterUserId?: string,
+    requesterRole?: string,
+  ) {
     const fine =
       await this.finesRepository.findOne({
         where: {
@@ -113,6 +224,15 @@ export class FinesService {
     if (!fine) {
       throw new NotFoundException(
         `Fine ${id} not found`,
+      );
+    }
+
+    if (
+      requesterRole?.toUpperCase() === 'MEMBER' &&
+      fine.borrow?.user?.user_id !== requesterUserId
+    ) {
+      throw new ForbiddenException(
+        'Members can only access their own fines',
       );
     }
 
@@ -171,6 +291,8 @@ export class FinesService {
 
   async findByBorrowId(
     borrowId: number,
+    requesterUserId?: string,
+    requesterRole?: string,
   ) {
     const borrow =
       await this.borrowsRepository.findOne({
@@ -182,6 +304,15 @@ export class FinesService {
     if (!borrow) {
       throw new NotFoundException(
         `Borrow ${borrowId} not found`,
+      );
+    }
+
+    if (
+      requesterRole?.toUpperCase() === 'MEMBER' &&
+      borrow.user_id !== requesterUserId
+    ) {
+      throw new ForbiddenException(
+        'Members can only access fines for their own borrows',
       );
     }
 
@@ -201,6 +332,57 @@ export class FinesService {
         fine_id: 'DESC',
       },
     });
+  }
+
+  // ==========================================
+  // POST /fines/:id/pay
+  // ==========================================
+
+  async pay(
+    id: number,
+    requesterUserId?: string,
+    requesterRole?: string,
+  ) {
+    const fine = await this.finesRepository.findOne({
+      where: { fine_id: id },
+      relations: {
+        borrow: {
+          user: true,
+        },
+      },
+    });
+
+    if (!fine) {
+      throw new NotFoundException(
+        `Fine ${id} not found`,
+      );
+    }
+
+    if (
+      requesterRole?.toUpperCase() === 'MEMBER' &&
+      fine.borrow?.user?.user_id !== requesterUserId
+    ) {
+      throw new ForbiddenException(
+        'Members can only pay their own fines',
+      );
+    }
+
+    if (fine.status === 'PAID') {
+      throw new ConflictException(
+        `Fine ${id} is already paid`,
+      );
+    }
+
+    fine.status = 'PAID';
+    fine.paid_at = new Date();
+
+    await this.finesRepository.save(fine);
+
+    return this.findOne(
+      id,
+      requesterUserId,
+      requesterRole,
+    );
   }
 
   // ==========================================

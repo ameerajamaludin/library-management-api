@@ -8,6 +8,8 @@ import { Borrow } from '../borrows/entities/borrow.entity';
 import { CopiesController } from './copies.controller';
 import { CopiesService } from './copies.service';
 
+import { UsersModule } from '../users/users.module';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -15,15 +17,16 @@ import { CopiesService } from './copies.service';
       Book,
       Borrow,
     ]),
+    UsersModule,
   ],
   controllers: [
-    CopiesController,
+    CopiesController
   ],
   providers: [
-    CopiesService,
+    CopiesService
   ],
   exports: [
-    CopiesService,
+    CopiesService
   ],
 })
 export class CopiesModule {}

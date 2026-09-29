@@ -6,6 +6,7 @@ import { User } from '../users/entities/user.entity';
 import { Copy } from '../copies/entities/copy.entity';
 import { BorrowsService } from './borrows.service';
 import { BorrowsController } from './borrows.controller';
+import { UsersModule } from '../users/users.module';
 import { Return } from '../returns/entities/return.entity';
 
 @Module({
@@ -16,6 +17,7 @@ import { Return } from '../returns/entities/return.entity';
       Copy,
       Return,
     ]),
+    UsersModule,
   ],
   controllers: [
     BorrowsController,
