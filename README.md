@@ -14,17 +14,18 @@ A modern REST API for managing a library's books, physical copies, members, borr
 
 ```text
 .
+├── data/                   # CSV seed data
 ├── docs/
-│   └── development-roadmap.md   # Architectural decisions & sprint plans
-├── src/
-│   ├── controllers/              # Route handlers
-│   ├── models/                   # Database schema definitions
-│   ├── routes/                   # API endpoint definitions
-│   ├── services/                 # Core business logic
-│   └── seeders/                  # Seed script for the 2,109 Open Library records
+│   └── development-roadmap.md
+├── src/                    # Application source
+├── test/                   # End-to-end tests
 ├── .env.example
-├── README.md
-└── package.json
+├── package.json
+├── nest-cli.json
+├── tsconfig.json
+├── tsconfig.build.json
+├── jest.config.ts
+└── README.md
 ```
 
 ---
@@ -35,8 +36,8 @@ The project is being developed incrementally.
 
 | Phase | Area | Status |
 |---|---|---|
-| 1 | Project & database foundation | 🟢 Completed / in progress |
-| 2 | Books & catalog API | 🟢 In progress |
+| 1 | Project & database foundation | ✅ Completed  |
+| 2 | Books & catalog API | ✅ Completed  |
 | 3 | Authentication & authorization | ⬜ Planned |
 | 4 | Borrowing | ⬜ Planned |
 | 5 | Returns | ⬜ Planned |
@@ -380,7 +381,7 @@ to explore the API through Swagger.
 
 The database uses PostgreSQL with TypeORM.
 
-The current domain model includes:
+The database domain model includes:
 
 ```text
 Category
