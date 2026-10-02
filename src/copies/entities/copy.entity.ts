@@ -34,11 +34,14 @@ export class Copy {
   })
   status: string;
 
-  @ManyToOne(() => Book, (book) => book.copies)
-  @JoinColumn({
-    name: 'openlibrary_work_id',
-  })
-  book: Book;
+@ManyToOne( () => Book, (book) => book.copies,{
+  onUpdate: 'CASCADE',
+},
+)
+@JoinColumn({
+  name: 'openlibrary_work_id',
+})
+book: Book;
 
   @OneToMany(() => Borrow, (borrow) => borrow.copy)
   borrows: Borrow[];

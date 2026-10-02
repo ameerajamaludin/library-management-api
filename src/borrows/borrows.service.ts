@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { User } from '../users/entities/user.entity';
 import { Copy } from '../copies/entities/copy.entity';
 import { CreateBorrowDto } from './dto/create-borrow.dto';
 import { BorrowResponseDto } from './dto/borrow-response.dto';
+import { calculateOverdueDays } from '../common/overdue-days.util';
 import { Return } from '../returns/entities/return.entity';
 import { ReturnBorrowDto } from './dto/return-borrow.dto';
 
@@ -88,9 +90,16 @@ private readonly returnsRepository: Repository<Return>,
     requesterRole?: string,
   ): Promise<BorrowResponseDto> {
     const {
-      user_id,
+      user_id: requestedUserId,
       copy_id,
     } = createBorrowDto;
+
+    // Borrowing for oneself is the common case, so user_id may
+    // be left out of the body and the authenticated user is
+    // borrowed for instead. Supplying it still borrows on behalf
+    // of that user, so the on-behalf-of check below runs against
+    // whichever user the borrow is actually for.
+    const user_id = requestedUserId ?? requesterUserId;
 
     if (
       requesterRole?.toUpperCase() === 'MEMBER' &&
@@ -161,29 +170,50 @@ private readonly returnsRepository: Repository<Return>,
     );
 
     // ------------------------------------------
-    // Create borrowing record
+    // Create borrowing record and make the
+    // copy unavailable in a single transaction
     // ------------------------------------------
 
-    const borrow =
-      this.borrowsRepository.create({
-        user_id,
-        copy_id,
-        borrowed_at: borrowedAt,
-        due_at: dueAt,
-        returned_at: null,
-      });
+    const borrowId =
+      await this.borrowsRepository.manager.transaction(
+        async (manager) => {
+          // A Copy can have at most one active Borrow
+          const activeBorrow =
+            await manager.findOne(Borrow, {
+              where: {
+                copy_id,
+                returned_at: IsNull(),
+              },
+            });
 
-    await this.borrowsRepository.save(
-      borrow,
-    );
+          if (activeBorrow) {
+            throw new ConflictException(
+              `Copy ${copy_id} is already borrowed`,
+            );
+          }
 
-    // ------------------------------------------
-    // Change copy status
-    // ------------------------------------------
+          const borrow = manager.create(Borrow, {
+            user_id,
+            copy_id,
+            borrowed_at: borrowedAt,
+            due_at: dueAt,
+            returned_at: null,
+          });
 
-    copy.status = 'BORROWED';
+          await manager.save(
+            Borrow,
+            borrow,
+          );
 
-    await this.copiesRepository.save(copy);
+          await manager.update(
+            Copy,
+            { copy_id },
+            { status: 'BORROWED' },
+          );
+
+          return borrow.borrow_id;
+        },
+      );
 
     // ------------------------------------------
     // Reload complete borrowing
@@ -192,7 +222,7 @@ private readonly returnsRepository: Repository<Return>,
     const completeBorrow =
       await this.borrowsRepository.findOne({
         where: {
-          borrow_id: borrow.borrow_id,
+          borrow_id: borrowId,
         },
         relations: {
           user: true,
@@ -204,7 +234,7 @@ private readonly returnsRepository: Repository<Return>,
 
     if (!completeBorrow) {
       throw new NotFoundException(
-        `Borrow ${borrow.borrow_id} not found`,
+        `Borrow ${borrowId} not found`,
       );
     }
 
@@ -219,11 +249,18 @@ private readonly returnsRepository: Repository<Return>,
   // ==========================================
 
   async findOverdue(): Promise<BorrowResponseDto[]> {
+    // A Borrow becomes overdue 1 calendar day after
+    // its due date, so only borrows past that cutoff
+    // are reported as overdue.
+    const overdueCutoff = new Date(
+      Date.now() - 1000 * 60 * 60 * 24,
+    );
+
     const overdueBorrows =
       await this.borrowsRepository.find({
         where: {
           returned_at: IsNull(),
-          due_at: LessThan(new Date()),
+          due_at: LessThan(overdueCutoff),
         },
         relations: {
           user: true,
@@ -236,9 +273,90 @@ private readonly returnsRepository: Repository<Return>,
         },
       });
 
-    return overdueBorrows.map((borrow) =>
+    return overdueBorrows.map((borrow) => ({
+      ...this.buildResponse(borrow),
+      overdue_days: calculateOverdueDays(borrow.due_at),
+    }));
+  }
+
+  // ==========================================
+  // GET /borrows
+  // ==========================================
+
+  async findAll(): Promise<BorrowResponseDto[]> {
+    const borrows =
+      await this.borrowsRepository.find({
+        relations: {
+          user: true,
+          copy: {
+            book: true,
+          },
+        },
+        order: {
+          borrow_id: 'DESC',
+        },
+      });
+
+    return borrows.map((borrow) =>
       this.buildResponse(borrow),
     );
+  }
+
+  // ==========================================
+  // GET /borrows/own
+  // ==========================================
+
+  async findByUser(
+    userId: string,
+  ): Promise<BorrowResponseDto[]> {
+    const borrows =
+      await this.borrowsRepository.find({
+        where: {
+          user_id: userId,
+        },
+        relations: {
+          user: true,
+          copy: {
+            book: true,
+          },
+        },
+        order: {
+          borrow_id: 'DESC',
+        },
+      });
+
+    return borrows.map((borrow) =>
+      this.buildResponse(borrow),
+    );
+  }
+
+  // ==========================================
+  // GET /borrows/:borrowId
+  // ==========================================
+
+  async findOne(
+    borrowId: number,
+  ): Promise<BorrowResponseDto> {
+    const borrow =
+      await this.borrowsRepository.findOne({
+        where: {
+          borrow_id: borrowId,
+        },
+        relations: {
+          user: true,
+          copy: {
+            book: true,
+          },
+        },
+      });
+
+    if (!borrow) {
+      throw new NotFoundException(
+        `Borrow ${borrowId} not found`,
+      );
+    }
+
+    return this.buildResponse(borrow);
   }
 
   // ==========================================
@@ -299,7 +417,7 @@ async returnByCopyId(
     requesterRole?.toUpperCase() === 'MEMBER' &&
     requesterUserId !== borrow.user_id
   ) {
-    throw new ConflictException(
+    throw new ForbiddenException(
       'Members can only return their own borrowed books',
     );
   }
@@ -310,35 +428,41 @@ async returnByCopyId(
 
   const returnedAt = new Date();
 
+  // ------------------------------------------
+  // Complete the borrow, record the return and
+  // release the copy in a single transaction
+  // ------------------------------------------
+
+  await this.borrowsRepository.manager.transaction(
+    async (manager) => {
+      await manager.update(
+        Borrow,
+        { borrow_id: borrow.borrow_id },
+        { returned_at: returnedAt },
+      );
+
+      const returnRecord =
+        manager.create(Return, {
+          borrow_id: borrow.borrow_id,
+          returned_at: returnedAt,
+          condition: returnBorrowDto.condition,
+          notes: returnBorrowDto.notes ?? null,
+        });
+
+      await manager.save(
+        Return,
+        returnRecord,
+      );
+
+      await manager.update(
+        Copy,
+        { copy_id: copyId },
+        { status: 'AVAILABLE' },
+      );
+    },
+  );
+
   borrow.returned_at = returnedAt;
-
-  await this.borrowsRepository.save(
-    borrow,
-  );
-
-  // ------------------------------------------
-  // Create return record
-  // ------------------------------------------
-
-  const returnRecord =
-    this.returnsRepository.create({
-      borrow_id: borrow.borrow_id,
-      returned_at: returnedAt,
-      condition: returnBorrowDto.condition,
-      notes: returnBorrowDto.notes ?? null,
-    });
-
-  await this.returnsRepository.save(
-    returnRecord,
-  );
-
-  // ------------------------------------------
-  // Make copy available
-  // ------------------------------------------
-
-  copy.status = 'AVAILABLE';
-
-  await this.copiesRepository.save(copy);
 
   // ------------------------------------------
   // Update response copy status

@@ -9,6 +9,7 @@ import { BooksController } from './books.controller';
 import { BooksService } from './books.service';
 import { Author } from '../authors/entities/author.entity';
 import { Copy } from '../copies/entities/copy.entity';
+import { CopiesModule } from '../copies/copies.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { Copy } from '../copies/entities/copy.entity';
       Copy,
     ]),
     UsersModule,
+    CopiesModule,
   ],
   controllers: [BooksController],
   providers: [BooksService],

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BorrowUserResponseDto {
   @ApiProperty({
@@ -98,4 +98,11 @@ export class BorrowResponseDto {
     nullable: true,
   })
   returned_at: Date | null;
+
+  @ApiPropertyOptional({
+    example: 3,
+    description:
+      'Completed 24-hour periods elapsed after the due date. Only present on overdue responses.',
+  })
+  overdue_days?: number;
 }

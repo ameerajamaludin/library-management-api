@@ -16,11 +16,16 @@ export class BookAuthor {
   @PrimaryColumn({ type: 'varchar', length: 255 })
   author_id: string;
 
-  @ManyToOne(() => Book)
-  @JoinColumn({
-    name: 'openlibrary_work_id',
-  })
-  book: Book;
+@ManyToOne(
+  () => Book,
+  {
+    onUpdate: 'CASCADE',
+  },
+)
+@JoinColumn({
+  name: 'openlibrary_work_id',
+})
+book: Book;
 
   @ManyToOne(() => Author)
   @JoinColumn({

@@ -1,0 +1,199 @@
+indicator:
+
+{user} can = the user have permission
+{user} tries to = the user doesn't have permission but tried to.
+
+Module Users
+
+✅ Scenario 1: Admin can view ALL users
+✅ Scenario 2: Librarian tries to view ALL users
+✅ Scenario 3: Member tries to view ALL users
+
+✅ Scenario 4: Admin can query user with valid ID or name
+✅ Scenario 5: Librarian tries to query user
+✅ Scenario 6: Member tries to query user
+
+✅ Scenario 7: Admin can add new user (allow user to input field per field for each metadata instead of all together)
+✅ Scenario 8: Librarian tries to add new user
+✅ Scenario 9: Member tries to add new user
+
+✅ Scenario 10: Admin can update user metadata (allow user to input field per field for each metadata instead of all together)
+✅ Scenario 11: Librarian tries to update user metadata
+✅ Scenario 12: Member tries to update user metadata
+
+✅ Scenario 13: Admin can delete user
+✅ Scenario 14: Librarian tries to delete user.
+✅ Scenario 15: Member tries to delete their own account
+✅ Scenario 16: Member tries to delete other user's account
+
+Module: Books
+Scenario 17: Admin can view ALL books
+Scenario 18: Librarian can view ALL books
+Scenario 19: Member can view ALL books
+
+Scenario 20: Admin can query book with valid openlibrary_work_id OR valid book name
+Scenario 21: Librarian can query book with valid openlibrary_work_id OR valid book name
+Scenario 22: Member can query book with valid openlibrary_work_id OR valid book name
+
+Scenario 23: Admin tries to query book with invalid openlibrary_work_id 
+Scenario 24: Librarian tries to query book with invalid openlibrary_work_id
+Scenario 25: Member tries to query book with invalid openlibrary_work_id
+
+Scenario 26: Admin tries to query book with empty openlibrary_work_id AND book name (if one of them is empty, they can query)
+Scenario 27: Librarian tries to query book with empty openlibrary_work_id AND book name (if one of them is empty, they can query)
+Scenario 28: Member tries to query book with empty openlibrary_work_id AND book name (if one of them is empty, they can query)
+Scenario 29: Empty user_id tries to query for books
+
+Scenario 30: User with low caps user_id tries to query for books (shouldn't be case sensitive)
+
+Scenario 31: Admin can add new book (allow user to input field per field for each metadata instead of all together) (include updated_by, updated_at)
+Scenario 32: Librarian can add new book (allow user to input field per field for each metadata instead of all together) (include updated_by, updated_at)
+Scenario 33: Member tries to add new book
+
+Scenario 34: Admin tries to add new book with existing openlibrary_work_id
+Scenario 35: Librarian tries to add new book with existing openlibrary_work_id
+Scenario 36: Member tries to add new book with existing openlibrary_work_id
+
+Scenario 37: Admin can update book metadata (allow user to input field per field for each metadata instead of all together) (ALL including openlibrary_work_id) (include updated_by, updated_at)
+Scenario 38: Librarian can update book metadata (allow user to input field per field for each metadata instead of all together) (ALL including openlibrary_work_id) (include updated_by, updated_at)
+Scenario 39: Member tries to update book metadata
+
+Scenario 40: Admin tries to delete book while it has existing copies
+Scenario 41: Librarian tries to delete book while it has existing copies
+Scenario 42: Member tries to delete book while it has existing copies
+
+Scenario 43: Admin tries to delete book while its copy is actively borrowed
+Scenario 44: Librarian tries to delete book while its copy is actively borrowed
+Scenario 45: Member tries to delete book while its copy is actively borrowed
+
+Scenario 46: Admin can delete book with no existing copies OR not actively borrowed 
+Scenario 47: Librarian can delete book with no existing copies OR not actively borrowed 
+Scenario 48: Member tries to can delete book with no existing copies OR not actively borrowed 
+
+Module: Authors
+✅ Scenario 49: Admin can view ALL authors
+✅ Scenario 50: Librarian can view ALL authors
+✅ Scenario 51: Member can view ALL authors
+
+✅ Scenario 51: Admin can query author with valid ID or name
+✅ Scenario 52: Librarian can query author with valid ID or name
+✅ Scenario 53: Member can query author with valid ID or name
+
+Scenario 54: Admin can update author metadata (allow user to input field per field for each metadata instead of all together) (ALL including openlibrary_work_id) (include updated_by, updated_at)
+Scenario 55: Librarian can update author metadata (allow user to input field per field for each metadata instead of all together) (ALL including openlibrary_work_id) (include updated_by, updated_at)
+Scenario 56: Member tries to update author metadata
+
+Module: Categories
+✅ Scenario 57: Admin can view ALL categories
+✅ Scenario 58: Librarian can view ALL categories
+✅ Scenario 59: Member can view ALL authors
+
+✅ Scenario 60: Admin can query categories with valid ID or name
+✅ Scenario 61: Librarian can query categories with valid ID or name
+✅ Scenario 62: Member can query categories with valid ID or name
+
+Module: Copies
+Scenario 63: Admin can view ALL copies
+Scenario 64: Librarian can view ALL copies
+Scenario 65: Member can view ALL copies
+
+Scenario 66: Admin can query copy with valid copy id, openlibrary_work_id OR valid book name
+Scenario 67: Librarian can query copy with valid copy id, openlibrary_work_id OR valid book name
+Scenario 68: Member can query copy with valid copy id, openlibrary_work_id OR valid book name
+
+Scenario 69: Admin tries to query copies with empty copy id, openlibrary_work_id AND book name (if one of them is empty, they can query)
+Scenario 70: Librarian tries to query book with empty copy id, openlibrary_work_id AND book name (if one of them is empty, they can query)
+Scenario 71: Member tries to query book with empty copy id, openlibrary_work_id AND book name (if one of them is empty, they can query)
+Scenario 72: Empty user_id tries to query for copy
+
+Scenario 73: User with low caps user_id tries to query for copies (shouldn't be case sensitive)
+
+Scenario 74: Admin can add new copy even if openlibrary_work_id exists (allow user to input field per field for each metadata instead of all together) (include updated_by, updated_at) (totalcopies and availableCopies will automatically be calculated)
+Scenario 75: Librarian can add new copy even if openlibrary_work_id exists (allow user to input field per field for each metadata instead of all together) (include updated_by, updated_at) (totalcopies and availableCopies will automatically be calculated)
+Scenario 76: Member tries to add new copy
+
+Scenario 77: Admin can update copy metadata (allow user to input field per field for each metadata instead of all together) (include updated_by, updated_at)
+Scenario 78: Librarian can update copy metadata (allow user to input field per field for each metadata instead of all together) (include updated_by, updated_at)
+Scenario 79: Member tries to update copy metadata
+
+Scenario 80: Admin can delete copy (include updated_by, updated_at) (totalcopies and availableCopies will automatically be calculated)
+Scenario 81: Librarian can delete copy (include updated_by, updated_at) (totalcopies and availableCopies will automatically be calculated)
+Scenario 82: Member tries to delete copy 
+
+Scenario 83: Admin tries to delete copy while it is actively borrowed
+Scenario 84: Librarian tries to delete copy while it is actively borrowed
+
+Scenario 85: When Admin updates book metadata, it will be reflected on copy
+Scenario 86: When Librarian updates book metadata, it will be reflected on copy
+
+Module: Borrows
+Scenario 87: Admin can view ALL borrowed books
+Scenario 88: Librarian can view ALL borrowed books
+Scenario 89: Member tries to view ALL borrowed books
+
+Scenario 90: Admin can view own borrowed books
+Scenario 91: Librarian can view own borrowed books
+Scenario 92: Member can view own borrowed books
+
+Scenario 93: Admin can query borrowed books with valid ID
+Scenario 94: Librarian can query borrowed books with valid ID
+Scenario 95: Member tries to query borrowed books with valid ID
+
+Scenario 96: Admin can borrow books for themselves (include borrowed_by, borrowed_at) (totalcopies and availableCopies will automatically be calculated)
+Scenario 97: Librarian can borrow books for themselves (include borrowed_by, borrowed_at) (totalcopies and availableCopies will automatically be calculated)
+Scenario 98: Member can borrow books for themselves (include borrowed_by, borrowed_at) (totalcopies and availableCopies will automatically be calculated)
+
+Scenario 99: Admin can borrow books on behalf of all users (include borrowed_by, borrowed_at) (totalcopies and availableCopies will automatically be calculated)
+Scenario 100: Librarian can borrow books on behalf of all users (include borrowed_by, borrowed_at) (totalcopies and availableCopies will automatically be calculated)
+Scenario 101: Member tries to borrow books on behalf of all users
+
+Module: Returns
+Scenario 102: Admin can view return records
+Scenario 103: Librarian can view return records
+Scenario 104: Member tries to view return records
+
+Scenario 105: Admin can view returned borrow history
+Scenario 106: Librarian can view returned borrow history
+Scenario 107: Member tries to view returned borrow history
+
+Scenario 108: Admin can query returned books by valid return ID
+Scenario 109: Librarian query returned books by valid return ID
+Scenario 110: Member query returned books by valid return ID (can only query their own, not others)
+
+Scenario 111: Admin can return books for themselves (include borrowed_by, borrowed_at) (totalcopies and availableCopies will automatically be calculated)
+Scenario 112: Librarian can return books for themselves (include borrowed_by, borrowed_at) (totalcopies and availableCopies will automatically be calculated)
+Scenario 113: Member can return books for themselves (include borrowed_by, borrowed_at) (totalcopies and availableCopies will automatically be calculated)
+
+Scenario 114: Admin can return books on behalf of all users (include borrowed_by, borrowed_at) (totalcopies and availableCopies will automatically be calculated)
+Scenario 115: Librarian can return books on behalf of all users (include borrowed_by, borrowed_at) (totalcopies and availableCopies will automatically be calculated)
+Scenario 116: Member tries to return books on behalf of all users
+
+Module: Overdue tracking & fines
+Scenario 117: Admin can view all overdue books
+Scenario 118: Librarian can view all overdue books
+Scenario 119: Member can view all overdue books (can only view their own, not others)
+
+Scenario 120: Admin can query overdue books by valid fine ID
+Scenario 121: Librarian can query overdue books by valid fine ID
+Scenario 122: Member tries to query overdue books by valid fine ID 
+
+Scenario 123: Admin can view all users that have overdue books
+Scenario 124: Librarian can view all users that have overdue books
+Scenario 125: Member tries to view all users that have overdue books
+
+Scenario 126: Admin can update fine metadata (allow user to input field per field for each metadata instead of all together) (ALL including openlibrary_work_id) (include updated_by, updated_at)
+Scenario 127: Librarian can update fine metadata (allow user to input field per field for each metadata instead of all together) (ALL including openlibrary_work_id) (include updated_by, updated_at)
+Scenario 128: Member tries to update fine metadata
+
+Scenario 129: Admin can pay fines for themselves (include paid_by, paid_at)
+Scenario 130: Librarian can pay fines for themselves (include paid_by, paid_at)
+Scenario 131: Member can pay books for themselves (include paid_by, paid_at)
+
+Scenario 132: Admin can pay fines on behalf of all users (include paid_by, paid_at)
+Scenario 133: Librarian can pay fines on behalf of all users (include paid_by, paid_at)
+Scenario 134: Member tries to pay fines on behalf of all users
+
+
+
+
+

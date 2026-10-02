@@ -3,11 +3,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Raw, Repository } from 'typeorm';
 
 import { Author } from './entities/author.entity';
 import { BookAuthor } from '../books/entities/book-author.entity';
 import { Book } from '../books/entities/book.entity';
+import { UpdateAuthorDto } from './dto/update-author.dto';
 
 @Injectable()
 export class AuthorsService {
@@ -30,20 +31,42 @@ export class AuthorsService {
     });
   }
 
-  async findOne(id: string): Promise<Author> {
+  async findOne(id: string) {
     const author = await this.authorsRepository.findOne({
       where: {
         author_id: id,
       },
     });
 
-    if (!author) {
+    if (author) {
+      return author;
+    }
+
+    // ------------------------------------------
+    // Fall back to a case-insensitive partial
+    // author name search
+    // ------------------------------------------
+
+    const authors = await this.authorsRepository.find({
+      where: {
+        author_name: Raw(
+          (alias) => `LOWER(${alias}) LIKE LOWER(:name)`,
+          { name: `%${id}%` },
+        ),
+      },
+
+      order: {
+        author_name: 'ASC',
+      },
+    });
+
+    if (authors.length === 0) {
       throw new NotFoundException(
         `Author ${id} not found`,
       );
     }
 
-    return author;
+    return authors;
   }
 
   async findBooksByAuthor(
@@ -85,5 +108,28 @@ export class AuthorsService {
         title: 'ASC',
       },
     });
+  }
+
+  async updateAuthor(
+    id: string,
+    updateAuthorDto: UpdateAuthorDto,
+  ): Promise<Author> {
+    const author = await this.authorsRepository.findOne({
+      where: {
+        author_id: id,
+      },
+    });
+
+    if (!author) {
+      throw new NotFoundException(
+        `Author ${id} not found`,
+      );
+    }
+
+    if (updateAuthorDto.author_name !== undefined) {
+      author.author_name = updateAuthorDto.author_name;
+    }
+
+    return this.authorsRepository.save(author);
   }
 }

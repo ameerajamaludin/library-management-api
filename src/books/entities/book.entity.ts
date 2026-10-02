@@ -48,6 +48,19 @@ export class Book {
   @Column({ type: 'varchar', nullable: true })
   cover_image_large: string | null;
 
+  @Column({
+  type: 'varchar',
+  length: 50,
+  nullable: true,
+})
+updated_by: string | null;
+
+@Column({
+  type: 'timestamp',
+  nullable: true,
+})
+updated_at: Date | null;
+
   @ManyToOne(() => Category, (category) => category.books)
   @JoinColumn({ name: 'category_id' })
   category: Category;

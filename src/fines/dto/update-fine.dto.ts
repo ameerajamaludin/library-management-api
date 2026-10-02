@@ -1,4 +1,6 @@
+import { Type } from 'class-transformer';
 import {
+  IsIn,
   IsNumber,
   IsOptional,
   IsString,
@@ -12,16 +14,19 @@ import {
 
 export class UpdateFineDto {
   @ApiPropertyOptional({
-    description: 'Fine amount.',
+    description:
+      'New fine amount. Optional, and supplied independently: send it on its own to change the amount and the reason, status and paid date keep their current values. It overrides the calculated amount of overdue days multiplied by the RM2 daily rate, so use it to correct an amount rather than to recalculate one.',
     example: 5.0,
   })
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   amount?: number;
 
   @ApiPropertyOptional({
-    description: 'Reason for the fine.',
+    description:
+      'New reason for the fine. Optional, and supplied independently: send it on its own and the amount, status and paid date keep their current values.',
     example: 'Late return',
   })
   @IsOptional()
@@ -30,16 +35,19 @@ export class UpdateFineDto {
   reason?: string;
 
   @ApiPropertyOptional({
-    description: 'Fine payment status.',
+    description:
+      'New fine payment status, either UNPAID or PAID. Optional, and supplied independently. A fine cannot be set to PAID without a recorded payer, so a fine that has never been paid is rejected with 409 if you send PAID here — pay it through POST /fines/{id}/pay instead, which records the payer and the payment time.',
     example: 'PAID',
   })
   @IsOptional()
   @IsString()
   @MaxLength(50)
+  @IsIn(['UNPAID', 'PAID'])
   status?: string;
 
   @ApiPropertyOptional({
-    description: 'Date and time when the fine was paid.',
+    description:
+      'New date and time when the fine was paid. Optional, and supplied independently: send it on its own and the amount, reason and status keep their current values.',
     example: '2026-09-30T10:30:00.000Z',
   })
   @IsOptional()

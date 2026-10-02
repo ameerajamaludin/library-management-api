@@ -7,6 +7,7 @@ import { AuthorsService } from './authors.service';
 
 import { Book } from '../books/entities/book.entity';
 import { BookAuthor } from '../books/entities/book-author.entity';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { BookAuthor } from '../books/entities/book-author.entity';
       BookAuthor,
       Book
     ]),
+    UsersModule,
   ],
   controllers: [
     AuthorsController,

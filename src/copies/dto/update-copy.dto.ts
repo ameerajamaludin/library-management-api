@@ -1,15 +1,28 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsIn,
   IsNotEmpty,
+  IsOptional,
   IsString,
 } from 'class-validator';
 
 export class UpdateCopyDto {
-  @ApiProperty({
-    example: 'BORROWED',
-    description: 'New status for the copy',
+  @ApiPropertyOptional({
+    example: 'LIB-000001-UPDATED',
+    description: 'New unique barcode for the physical copy',
   })
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  status: string;
+  barcode?: string;
+
+  @ApiPropertyOptional({
+    example: 'AVAILABLE',
+    description: 'New status for the copy',
+  })
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsIn(['AVAILABLE', 'BORROWED'])
+  status?: string;
 }

@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 import {
   IsInt,
@@ -12,18 +13,24 @@ import {
 export class CreateBookDto {
   @ApiProperty({
     example: 'OL514625W',
+    description:
+      'Open Library work ID, the book identifier. Required.',
   })
   @IsString()
   openlibrary_work_id: string;
 
   @ApiProperty({
     example: 'Six not-so-easy pieces',
+    description:
+      'Book title. Required.',
   })
   @IsString()
   title: string;
 
   @ApiPropertyOptional({
     example: 'A collection of lectures on physics.',
+    description:
+      'Book description. Optional.',
   })
   @IsOptional()
   @IsString()
@@ -31,8 +38,11 @@ export class CreateBookDto {
 
   @ApiPropertyOptional({
     example: 6,
+    description:
+      'Month of publication, 1-12. Optional.',
   })
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @Max(12)
@@ -40,19 +50,27 @@ export class CreateBookDto {
 
   @ApiPropertyOptional({
     example: 1997,
+    description:
+      'Year of publication. Optional.',
   })
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   published_year?: number;
 
   @ApiProperty({
     example: 142,
+    description:
+      'ID of the category the book belongs to. Required.',
   })
+  @Type(() => Number)
   @IsInt()
   category_id: number;
 
   @ApiPropertyOptional({
     example: 'Nonfiction',
+    description:
+      'Fiction or nonfiction classification. Optional.',
   })
   @IsOptional()
   @IsString()
@@ -60,6 +78,8 @@ export class CreateBookDto {
 
   @ApiPropertyOptional({
     example: '9780465025268',
+    description:
+      'Book ISBN. Optional.',
   })
   @IsOptional()
   @IsString()
@@ -69,6 +89,8 @@ export class CreateBookDto {
   example: 'ACTIVE',
   enum: ['ACTIVE', 'INACTIVE', 'ARCHIVED'],
   default: 'ACTIVE',
+  description:
+    'Book lifecycle status. Optional, and defaults to ACTIVE when the book is created without one.',
 })
 @IsOptional()
 @IsIn(['ACTIVE', 'INACTIVE', 'ARCHIVED'])
@@ -76,6 +98,8 @@ status?: string;
 
   @ApiPropertyOptional({
     example: '\\cover_image\\OL514625W_s.jpg',
+    description:
+      'Path of the small cover image. Optional.',
   })
   @IsOptional()
   @IsString()
@@ -83,6 +107,8 @@ status?: string;
 
   @ApiPropertyOptional({
     example: '\\cover_image\\OL514625W_m.jpg',
+    description:
+      'Path of the medium cover image. Optional.',
   })
   @IsOptional()
   @IsString()
@@ -90,6 +116,8 @@ status?: string;
 
   @ApiPropertyOptional({
     example: '\\cover_image\\OL514625W_l.jpg',
+    description:
+      'Path of the large cover image. Optional.',
   })
   @IsOptional()
   @IsString()
